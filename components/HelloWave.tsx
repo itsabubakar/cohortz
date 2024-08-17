@@ -10,6 +10,7 @@ import Animated, {
 import { ThemedText } from '@/components/ThemedText';
 
 export function HelloWave() {
+
   const rotationAnimation = useSharedValue(0);
 
   rotationAnimation.value = withRepeat(
