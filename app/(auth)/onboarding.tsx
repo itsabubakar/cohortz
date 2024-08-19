@@ -1,35 +1,64 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import Onboarding from 'react-native-onboarding-swiper'
-import Lottie from 'lottie-react-native'
-import {  useRouter } from 'expo-router'
-import { setItem } from '@/utils/asyncStorage'
-const {width, height} = Dimensions.get('window')
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React from 'react';
+import Onboarding from 'react-native-onboarding-swiper';
+import Lottie from 'lottie-react-native';
+import { useRouter } from 'expo-router';
+import { setItem } from '@/utils/asyncStorage';
+const { width, height } = Dimensions.get('window');
 
-type Props = {}
+type Props = {};
 
 const OnBoarding = (props: Props) => {
-    const router = useRouter()
+  const router = useRouter();
 
   const handleDone = () => {
-    router.replace('/(auth)/auth')
-    setItem('onboarded', 'true')
-  }
+    router.replace('/(auth)/auth');
+    setItem('onboarded', 'true');
+  };
 
   const handleSkip = () => {
-    router.replace('/(auth)/auth')
-    setItem('onboarded', 'true')
-  }
+    router.replace('/(auth)/auth');
+    setItem('onboarded', 'true');
+  };
 
-  const doneDutton = ({...props}) => {
-    return <TouchableOpacity style={styles.doneButton} {...props} >
-      <Text >Done</Text>
-    </TouchableOpacity>
-  }
+  const doneDutton = ({ ...props }) => {
+    return (
+      <TouchableOpacity style={styles.doneButton} {...props}>
+        <Text>Done</Text>
+      </TouchableOpacity>
+    );
+  };
+  const Skip = ({ ...props }) => {
+    return (
+      <TouchableOpacity {...props}>
+        <Text style={{ fontFamily: 'DMSansRegular', paddingLeft: 24 }}>
+          Skip
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+  const Next = ({ ...props }) => {
+    return (
+      <TouchableOpacity {...props}>
+        <Text style={{ fontFamily: 'DMSansRegular', paddingRight: 24 }}>
+          Next
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <Onboarding
+        NextButtonComponent={Next}
+        SkipButtonComponent={Skip}
         onSkip={handleSkip}
         onDone={handleDone}
         DoneButtonComponent={doneDutton}
@@ -38,69 +67,88 @@ const OnBoarding = (props: Props) => {
           paddingHorizontal: 16,
           flex: 1,
         }}
-        pages={
-          [
-            {
-              backgroundColor: '#87CEEB',
-              image: (
-                <View style={styles.content}>
-                  <Text style={styles.header}>Learn and network at the same time!</Text>
-                  <Lottie style={styles.lottie} source={require('../../assets/images/lottie.json')} autoPlay loop 
-                  />
-                  <Text style={styles.subheading}>Invited to Cohortz? Accept invitation.</Text>
-                </View>
-              ),
-              title: '',
-              subtitle: '',
-            },
-            {
-              backgroundColor: '#98FF98',
-              image: (
-                <View>
-                  <Text style={styles.header}>You can be a Convener</Text>
-                  <Lottie style={styles.lottie} source={require('../../assets/images/lottie.json')} autoPlay loop 
-                  />
-                </View>
-              ),
-              title: '',
-              subtitle: '',
-            },
-            {
-              backgroundColor: '#fef3c7',
-              image: (
-                <View>
-                  <Text style={styles.header}>A Creator</Text>
+        pages={[
+          {
+            backgroundColor: '#87CEEB',
+            image: (
+              <View style={styles.content}>
+                <Text style={styles.header}>
+                  Learn and network at the same time!
+                </Text>
+                <Lottie
+                  style={styles.lottie}
+                  source={require('../../assets/images/lottie.json')}
+                  autoPlay
+                  loop
+                />
+                <Text style={styles.subheading}>
+                  Invited to Cohortz?{' '}
+                  <Text style={{ textDecorationLine: 'underline' }}>
+                    Accept Invitation
+                  </Text>
+                </Text>
+              </View>
+            ),
+            title: '',
+            subtitle: '',
+          },
+          {
+            backgroundColor: '#98FF98',
+            image: (
+              <View>
+                <Text style={styles.header}>You can be a Convener</Text>
+                <Lottie
+                  style={styles.lottie}
+                  source={require('../../assets/images/lottie.json')}
+                  autoPlay
+                  loop
+                />
+              </View>
+            ),
+            title: '',
+            subtitle: '',
+          },
+          {
+            backgroundColor: '#fef3c7',
+            image: (
+              <View>
+                <Text style={styles.header}>A Creator</Text>
 
-                  <Lottie style={styles.lottie} source={require('../../assets/images/lottie.json')} autoPlay loop 
-                  />
-                </View>
-              ),
-              title: '',
-              subtitle: '',
-            },
-            {
-              backgroundColor: '#bada55',
-              title: '',
-              image: (
-                <View>
-                  <Text style={styles.header}>Or a Student</Text>
+                <Lottie
+                  style={styles.lottie}
+                  source={require('../../assets/images/lottie.json')}
+                  autoPlay
+                  loop
+                />
+              </View>
+            ),
+            title: '',
+            subtitle: '',
+          },
+          {
+            backgroundColor: '#bada55',
+            title: '',
+            image: (
+              <View>
+                <Text style={styles.header}>Or a Student</Text>
 
-                  <Lottie style={styles.lottie} source={require('../../assets/images/lottie.json')} autoPlay loop 
-                  />
-                </View>
-              ),
-              subtitle: '',
-            },
-          ]
-        }
-      
-      
+                <Lottie
+                  style={styles.lottie}
+                  source={require('../../assets/images/lottie.json')}
+                  autoPlay
+                  loop
+                />
+              </View>
+            ),
+            subtitle: '',
+          },
+        ]}
       />
     </View>
-  )
-}
+  );
+};
 
-export default OnBoarding
+export default OnBoarding;
 
 const styles = StyleSheet.create({
   content: {
@@ -110,28 +158,30 @@ const styles = StyleSheet.create({
   header: {
     textAlign: 'center',
     fontSize: 24,
-    fontFamily: 'DMSansSemiBold',
+    fontFamily: 'DMSansRegular',
+    paddingHorizontal: 60,
   },
-  subheading:{
-fontSize:14,
-fontFamily: 'DMSansRegular',
+  subheading: {
+    fontSize: 14,
+    fontFamily: 'DMSansRegular',
     textAlign: 'center',
-    marginTop: 250,
+    marginTop: 200,
   },
-  container :{
+  container: {
     flex: 1,
     backgroundColor: 'white',
   },
   lottie: {
-    width: width*0.95,
+    width: width * 0.95,
     height: width,
+    marginTop: 60,
   },
-  doneButton :{
+  doneButton: {
     paddingHorizontal: 20,
     paddingVertical: 12,
     fontSize: 16,
     backgroundColor: 'white',
     borderTopLeftRadius: 100,
-    borderBottomLeftRadius: 100
-  }
-})
+    borderBottomLeftRadius: 100,
+  },
+});

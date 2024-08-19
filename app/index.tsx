@@ -1,16 +1,19 @@
 import { useEffect } from 'react';
-import {  useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { supabase } from '@/utils/lib/supabase';
 import { getItem } from '../utils/asyncStorage';
 import { View, ActivityIndicator } from 'react-native';
 
 export default function InitialScreen() {
-    const router = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     const initialize = async () => {
       const onboarded = await getItem('onboarded');
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log(onboarded);
 
       if (!onboarded) {
         router.replace('/(auth)/onboarding');
