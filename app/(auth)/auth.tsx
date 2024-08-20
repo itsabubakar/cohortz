@@ -1,40 +1,64 @@
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { removeItem } from '@/utils/asyncStorage'
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { removeItem } from '@/utils/asyncStorage';
+import Lottie from 'lottie-react-native';
+const { width, height } = Dimensions.get('window');
 
-type Props = {}
+type Props = {};
 
 const Welcome = (props: Props) => {
   const handleClick = async () => {
-    await removeItem('onboarded')
-  }
+    await removeItem('onboarded');
+  };
   return (
     <SafeAreaView>
-    <View>
       <View>
-      <Text style={styles.header}>Welcome to Cohortz!</Text>
-      <Text style={styles.subHeader}>Let's embark on your learning adventure together.</Text>
+        <View>
+          <Text style={styles.header}>Welcome to Cohortz!</Text>
+          <Text style={styles.subHeader}>
+            Let's embark on your learning adventure together.
+          </Text>
+        </View>
+        <View>
+          <TouchableOpacity onPress={handleClick}>
+            <Text>Get Started</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Lottie
+            style={styles.lottie}
+            source={require('../../assets/images/lottie.json')}
+            autoPlay
+            loop
+          />
+        </View>
       </View>
-      <View>
-        <TouchableOpacity onPress={handleClick}>
-          <Text>Get Started</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Welcome
+export default Welcome;
 
 const styles = StyleSheet.create({
-  header:{
+  header: {
     fontSize: 36,
     textAlign: 'center',
   },
   subHeader: {
     fontSize: 24,
     textAlign: 'center',
-  }
-})
+  },
+  lottie: {
+    width: width * 0.95,
+    height: width,
+    marginTop: 60,
+  },
+});

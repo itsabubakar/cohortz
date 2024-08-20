@@ -1,22 +1,17 @@
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import React from 'react';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '@shopify/restyle';
 import Onboarding from 'react-native-onboarding-swiper';
 import Lottie from 'lottie-react-native';
 import { useRouter } from 'expo-router';
 import { setItem } from '@/utils/asyncStorage';
-const { width, height } = Dimensions.get('window');
+import { Theme, Text } from '@/theme/theme';
 
-type Props = {};
+const { width } = Dimensions.get('window');
 
-const OnBoarding = (props: Props) => {
+const OnBoarding = () => {
   const router = useRouter();
+  const theme = useTheme<Theme>();
 
   const handleDone = () => {
     router.replace('/(auth)/auth');
@@ -28,28 +23,26 @@ const OnBoarding = (props: Props) => {
     setItem('onboarded', 'true');
   };
 
-  const doneDutton = ({ ...props }) => {
+  const doneButton = ({ ...props }) => {
     return (
       <TouchableOpacity style={styles.doneButton} {...props}>
-        <Text>Done</Text>
+        <Text style={{ fontFamily: 'DMSansSemiBold' }}>Done</Text>
       </TouchableOpacity>
     );
   };
+
   const Skip = ({ ...props }) => {
     return (
       <TouchableOpacity {...props}>
-        <Text style={{ fontFamily: 'DMSansRegular', paddingLeft: 24 }}>
-          Skip
-        </Text>
+        <Text style={styles.skipNext}>Skip</Text>
       </TouchableOpacity>
     );
   };
+
   const Next = ({ ...props }) => {
     return (
       <TouchableOpacity {...props}>
-        <Text style={{ fontFamily: 'DMSansRegular', paddingRight: 24 }}>
-          Next
-        </Text>
+        <Text style={styles.skipNext}>Next</Text>
       </TouchableOpacity>
     );
   };
@@ -61,18 +54,18 @@ const OnBoarding = (props: Props) => {
         SkipButtonComponent={Skip}
         onSkip={handleSkip}
         onDone={handleDone}
-        DoneButtonComponent={doneDutton}
+        DoneButtonComponent={doneButton}
         bottomBarHighlight={false}
         containerStyles={{
-          paddingHorizontal: 16,
+          paddingHorizontal: theme.spacing.m,
           flex: 1,
         }}
         pages={[
           {
-            backgroundColor: '#87CEEB',
+            backgroundColor: theme.colors.skyBlue,
             image: (
-              <View style={styles.content}>
-                <Text style={styles.header}>
+              <View>
+                <Text style={[styles.header]} variant="headerTwo">
                   Learn and network at the same time!
                 </Text>
                 <Lottie
@@ -81,7 +74,7 @@ const OnBoarding = (props: Props) => {
                   autoPlay
                   loop
                 />
-                <Text style={styles.subheading}>
+                <Text style={styles.subHeading} variant="subheading">
                   Invited to Cohortz?{' '}
                   <Text style={{ textDecorationLine: 'underline' }}>
                     Accept Invitation
@@ -93,10 +86,12 @@ const OnBoarding = (props: Props) => {
             subtitle: '',
           },
           {
-            backgroundColor: '#98FF98',
+            backgroundColor: theme.colors.mintGreen,
             image: (
               <View>
-                <Text style={styles.header}>You can be a Convener</Text>
+                <Text style={styles.header} variant="headerTwo">
+                  You can be a Convener
+                </Text>
                 <Lottie
                   style={styles.lottie}
                   source={require('../../assets/images/lottie.json')}
@@ -109,11 +104,12 @@ const OnBoarding = (props: Props) => {
             subtitle: '',
           },
           {
-            backgroundColor: '#fef3c7',
+            backgroundColor: theme.colors.lightYellow,
             image: (
               <View>
-                <Text style={styles.header}>A Creator</Text>
-
+                <Text style={styles.header} variant="headerTwo">
+                  A Creator
+                </Text>
                 <Lottie
                   style={styles.lottie}
                   source={require('../../assets/images/lottie.json')}
@@ -126,12 +122,13 @@ const OnBoarding = (props: Props) => {
             subtitle: '',
           },
           {
-            backgroundColor: '#bada55',
+            backgroundColor: theme.colors.lightGreen,
             title: '',
             image: (
               <View>
-                <Text style={styles.header}>Or a Student</Text>
-
+                <Text style={styles.header} variant="headerTwo">
+                  Or a Student
+                </Text>
                 <Lottie
                   style={styles.lottie}
                   source={require('../../assets/images/lottie.json')}
@@ -151,21 +148,19 @@ const OnBoarding = (props: Props) => {
 export default OnBoarding;
 
 const styles = StyleSheet.create({
-  content: {
-    height: '100%',
-    marginTop: 200,
-  },
   header: {
+    padding: 24,
     textAlign: 'center',
-    fontSize: 24,
-    fontFamily: 'DMSansRegular',
-    paddingHorizontal: 60,
+    marginTop: 150,
   },
-  subheading: {
-    fontSize: 14,
-    fontFamily: 'DMSansRegular',
+  subHeading: {
     textAlign: 'center',
-    marginTop: 200,
+    // marginBottom: -360,
+  },
+  skipNext: {
+    fontFamily: 'DMSansSemiBold',
+    paddingLeft: 24,
+    paddingRight: 24,
   },
   container: {
     flex: 1,
@@ -174,7 +169,7 @@ const styles = StyleSheet.create({
   lottie: {
     width: width * 0.95,
     height: width,
-    marginTop: 60,
+    marginBottom: 150,
   },
   doneButton: {
     paddingHorizontal: 20,

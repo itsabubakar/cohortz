@@ -1,50 +1,73 @@
-# Welcome to your Expo app 👋
+# Cohortz
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Cohortz is a dynamic platform for managing communities and online classes, combining features similar to Circle and Skol. The app allows users to create and manage communities (referred to as "cohortz"), upload and share resources, and follow different cohortz to stay updated with their activities. Whether you're an educator, community leader, or student, Cohortz provides a centralized space to facilitate engagement and learning.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Create and Manage Cohortz**: Users can easily create and customize their own cohortz, defining their focus and objectives.
+- **Resource Uploads**: Share valuable resources, such as documents, videos, and links, with your cohortz members.
+- **Follow Cohortz**: Stay connected with various cohortz by following them and receiving updates on their activities.
+- **Community Engagement**: Engage with members through posts, discussions, and updates.
+
+## Technologies
+
+- **Frontend**: Built with React Native and Outblic for a seamless and responsive user experience.
+- **Backend**: Utilizes modern backend technologies to handle data management, user authentication, and resource sharing.
+
+## Installation
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/yourusername/cohortz.git
+   cd cohortz
+   ```
+
+2. **Install Dependencies**
+
+   Make sure you have [Node.js](https://nodejs.org/) installed. Then, run:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Set Up Environment Variables**
+
+   Create a `.env` file in the root directory and add your environment variables (e.g., API keys, database URLs).
+
+4. **Run the App**
+
+   For development, start the development server:
 
    ```bash
-    npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+   This will start the app on a local server. Follow the instructions in the terminal to view the app on your device or emulator.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Usage
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Creating a Cohortz**: Navigate to the "Create Cohortz" section, fill in the details, and customize your community.
+- **Uploading Resources**: Go to your cohortz page, and use the upload feature to add resources for members.
+- **Following Cohortz**: Explore and search for cohortz to follow and receive updates.
 
-## Get a fresh project
+## Contributing
 
-When you're ready, run:
+Contributions are welcome! If you'd like to contribute to the development of Cohortz, please follow these steps:
 
-```bash
-npm run reset-project
-```
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes and commit them (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## License
 
-## Learn more
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Contact
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+For any questions or inquiries, please contact:
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Email**: sadiqbilyamin@gmail.com
+- **GitHub**: [itsabubakar](https://github.com/itsabubakar)
