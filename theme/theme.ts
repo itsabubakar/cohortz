@@ -2,10 +2,12 @@ import { createBox, createText, createTheme } from '@shopify/restyle';
 
 const theme = createTheme({
   colors: {
-    primary: '#272727',
+    primary: '#5A2EA0',
+    primaryDark: '#272727',
     background: '#F0F0F0',
     cardBackground: '#FFFFFF',
-    text: '#1C1C1C',
+    text: '#2D2D2D',
+    buttonText: '#FCFBFE',
     skyBlue: '#87CEEB',
     mintGreen: '#98FF98',
     lightYellow: '#fef3c7',
@@ -29,20 +31,24 @@ const theme = createTheme({
     headerOne: {
       fontFamily: 'DMSansSemiBold',
       fontSize: 32,
-      fontWeight: '700',
       color: 'text',
     },
     headerTwo: {
       fontFamily: 'DMSansMedium',
       fontSize: 24,
-      fontWeight: '600',
       color: 'text',
     },
     subheading: {
       fontFamily: 'DMSansRegular',
       fontSize: 14,
-      fontWeight: '400',
       color: 'text',
+    },
+    button: {
+      fontFamily: 'DMSansMedium',
+      fontSize: 14,
+      textAlign: 'center',
+      color: 'buttonText',
+      textTransform: 'uppercase',
     },
     body: {
       fontSize: 16,

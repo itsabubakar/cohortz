@@ -17,8 +17,8 @@ export default function InitialScreen() {
 
       if (!onboarded) {
         router.replace('/(auth)/onboarding');
-      } else if (session && session.user) {
-        router.replace('/(home)/home');
+        // } else if (session && session.user) {
+        // router.replace('/(home)/home');
       } else {
         router.replace('/(auth)');
       }
