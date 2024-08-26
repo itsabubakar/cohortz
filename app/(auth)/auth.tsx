@@ -1,4 +1,10 @@
-import { Dimensions, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { removeItem } from '@/utils/asyncStorage';
@@ -12,8 +18,11 @@ import BottomSheet, {
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
+import { StatusBar } from 'expo-status-bar';
+import Constants from 'expo-constants';
 
 const { width, height } = Dimensions.get('window');
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : Constants.statusBarHeight;
 
 type Props = {};
 
@@ -39,18 +48,12 @@ const Welcome = (props: Props) => {
   const renderBackdrop = useCallback(
     (
       props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps,
-    ) => (
-      <BottomSheetBackdrop
-        opacity={1}
-        style={{ backgroundColor: 'black' }}
-        {...props}
-      />
-    ),
+    ) => <BottomSheetBackdrop {...props} opacity={0.7} />,
     [],
   );
 
   return (
-    <SafeAreaWrapper>
+    <>
       <View style={styles.container}>
         <PaddedView>
           <View style={styles.welcomeView}>
@@ -89,7 +92,7 @@ const Welcome = (props: Props) => {
         <BottomSheet
           ref={bottomSheetRef}
           index={0} // Start fully collapsed
-          snapPoints={[1, '50%', '30%']} // Adjust snap points
+          snapPoints={[1, '30%', '30%']} // Adjust snap points
           onChange={handleSheetChanges}
           enablePanDownToClose // Allows swipe down to close
           backdropComponent={renderBackdrop}
@@ -108,7 +111,8 @@ const Welcome = (props: Props) => {
           </BottomSheetView>
         </BottomSheet>
       </View>
-    </SafeAreaWrapper>
+      <StatusBar style="dark" />
+    </>
   );
 };
 
@@ -117,12 +121,11 @@ export default Welcome;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: STATUSBAR_HEIGHT, // Ensure content doesn't overlap with the status bar
   },
   contentContainer: {
     flex: 1,
-    // alignItems: 'center',
     padding: 16,
-    // justifyContent: 'center',
   },
   welcomeView: {
     marginTop: height * 0.066,
