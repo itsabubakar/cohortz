@@ -1,3 +1,5 @@
+import { Theme } from '@/theme/theme';
+import { useTheme } from '@shopify/restyle';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import {
@@ -12,8 +14,19 @@ type Props = {
 };
 
 const SafeAreaWrapper = ({ children, style }: Props) => {
+  const theme = useTheme<Theme>();
+
   return (
-    <SafeAreaView style={[{ flex: 1, backgroundColor: 'white' }, style]}>
+    <SafeAreaView
+      style={[
+        {
+          flex: 1,
+          backgroundColor: theme.colors.lightBackground,
+          paddingHorizontal: theme.spacing.m,
+        },
+        style,
+      ]}
+    >
       {children}
     </SafeAreaView>
   );

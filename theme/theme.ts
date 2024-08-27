@@ -4,8 +4,8 @@ const theme = createTheme({
   colors: {
     primary: '#5A2EA0',
     primaryDark: '#272727',
-    background: '#F0F0F0',
-    cardBackground: '#FFFFFF',
+    primaryLight: '#E3DDF9',
+    lightBackground: '#FFFFFF',
     text: '#2D2D2D',
     buttonText: '#FCFBFE',
     skyBlue: '#87CEEB',
@@ -53,6 +53,15 @@ const theme = createTheme({
     body: {
       fontSize: 16,
       color: 'text',
+    },
+    s: {
+      fontSize: 12,
+    },
+    m: {
+      fontSize: 16,
+    },
+    l: {
+      fontSize: 24,
     },
     // Add more text variants as needed
   },

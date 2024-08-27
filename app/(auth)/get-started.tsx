@@ -20,14 +20,14 @@ import BottomSheet, {
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : Constants.statusBarHeight;
 
 type Props = {};
 
-const Welcome = (props: Props) => {
+const GetStarted = (props: Props) => {
   const theme = useTheme<Theme>();
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -64,10 +64,10 @@ const Welcome = (props: Props) => {
         <PaddedView>
           <View style={styles.welcomeView}>
             <Text variant={'headerOne'} style={styles.header}>
-              Welcome to Cohortz!
+              Let’s get started!
             </Text>
             <Text style={styles.subHeader}>
-              Let's embark on your learning adventure together.
+              You've confirmed [email]. You're all set.
             </Text>
           </View>
           <View>
@@ -79,52 +79,33 @@ const Welcome = (props: Props) => {
             />
           </View>
           <View style={styles.buttonContainer}>
-            <Button onPress={openBottomSheet} text="Get Started" />
+            <Button
+              onPress={() => console.log('hello')}
+              text="join a community"
+            />
             <Text
-              style={{ textAlign: 'center', marginTop: 16 }}
+              style={{ textAlign: 'center', marginTop: 32 }}
               variant="subheading"
             >
-              Invited to Cohortz?{' '}
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                }}
-              >
-                Accept Invitation
-              </Text>
+              Have knowledge to share?
             </Text>
+            <Button
+              variant="outline"
+              style={{
+                marginTop: 18,
+              }}
+              onPress={() => router.navigate('/(auth)/create-community')}
+              text="create a community"
+            />
           </View>
         </PaddedView>
-        <BottomSheet
-          ref={bottomSheetRef}
-          index={0} // Start fully collapsed
-          snapPoints={[1, '30%', '30%']} // Adjust snap points
-          onChange={handleSheetChanges}
-          enablePanDownToClose // Allows swipe down to close
-          backdropComponent={renderBackdrop}
-        >
-          <BottomSheetView style={styles.contentContainer}>
-            <Link href="/(auth)/email-confirmation" asChild>
-              <Button
-                style={{ marginTop: 16, marginBottom: 16 }}
-                onPress={openBottomSheet}
-                text="Log in"
-              />
-            </Link>
-            <Button
-              variant="secondary"
-              onPress={openBottomSheet}
-              text="sign up"
-            />
-          </BottomSheetView>
-        </BottomSheet>
       </View>
       <StatusBar style="dark" />
     </>
   );
 };
 
-export default Welcome;
+export default GetStarted;
 
 const styles = StyleSheet.create({
   container: {

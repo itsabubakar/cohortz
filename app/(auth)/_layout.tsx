@@ -1,17 +1,21 @@
-import { Stack } from "expo-router"
+import { Stack } from 'expo-router';
 
-type Props = {}
+type Props = {};
 const Layout = (props: Props) => {
-    return <Stack
-        screenOptions={{
-            headerShown: false
-        }}
-
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
     >
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="signUp" />
+      <Stack.Screen name="auth" />
+      <Stack.Screen name="email-confirmation" />
+      <Stack.Screen name="check-email" />
+      <Stack.Screen name="get-started" />
+      <Stack.Screen name="create-community" />
+      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="signUp" />
     </Stack>
-
-}
-export default Layout
+  );
+};
+export default Layout;
