@@ -67,7 +67,7 @@ const GetStarted = (props: Props) => {
               Let’s get started!
             </Text>
             <Text style={styles.subHeader}>
-              You've confirmed [email]. You're all set.
+              You've confirmed your email. You're all set.
             </Text>
           </View>
           <View>

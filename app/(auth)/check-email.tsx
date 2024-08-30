@@ -29,8 +29,11 @@ const CheckEmail = (props: Props) => {
         </Text>
         <Text style={{ textAlign: 'center' }}>
           To confirm your email address, tap the button on the email we sent to
-          [email].
+          {'\n'}
+          {/* Turn the text bellow bold */}
+          <Text>abubakarsadiqbilyaminmakama@gmail.com</Text>
         </Text>
+
         <View style={{ marginTop: 36 }}>
           <Button
             text="Next"
