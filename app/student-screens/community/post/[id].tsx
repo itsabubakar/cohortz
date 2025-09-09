@@ -159,7 +159,8 @@ export default function PostScreen() {
           <Comment 
             prop={{
               text: comment.text,
-              post_id: comment.post_id
+              post_id: comment.post_id,
+              user: comment.user
             }}
 
           />

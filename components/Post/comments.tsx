@@ -10,7 +10,7 @@ export const Comment: React.FC<CommentType> = ({prop}) => {
         <View style={styles.container} >
             <View style={{flexDirection: 'row', gap: 12, alignItems: 'center'}}>
                 <View style={{width: 30, height: 30, borderRadius: 20, backgroundColor: '#40135B', marginBottom: 10}}></View>
-                <Text style={{marginBottom: 6}}>John Doe</Text>
+                <Text style={{marginBottom: 6}}>{prop.user?.first_name} {prop.user?.last_name}</Text>
             </View>
             <Text>{prop.text}</Text>
         </View>
