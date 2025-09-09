@@ -50,6 +50,9 @@ const Community = () => {
         <Link href="/(auth)/login" style={{ color: '#B085EF', fontSize: 18, fontWeight: '600' }}>
           Cohortle
         </Link>
+        <Link href={"/student-screens/community/upload"} style={{ position: 'absolute', right: 0, top: 0, padding: 8, borderRadius: 8, backgroundColor: '#E9D7FE' }}>
+          <Text style={{fontWeight: 700}}>Create Post</Text>
+        </Link>
       </View>
 
       {/* Tab Switcher */}

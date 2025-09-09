@@ -1,7 +1,8 @@
 import { Text, TextInput, View } from "react-native"
 import { Button } from "../ui"
 import { useState } from "react"
-import { CommentPayload, createComment } from "@/api/comment"
+import { CommentProp } from "@/types/commentType"
+import { createComment } from "@/api/comment"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 interface FormProp {
   postId: string
@@ -15,7 +16,7 @@ export const CommentInput = ({postId}: FormProp) => {
             console.error("no token")
             return
         }
-        const payload: CommentPayload = {
+        const payload: CommentProp = {
             text: text.trim(),
             post_id: postId
         }

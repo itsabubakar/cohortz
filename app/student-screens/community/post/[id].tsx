@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import Message from "@/components/Post/post";
 import { Comment } from "@/components/Post/comments";
 import { CommentInput } from "@/components/Post/input";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommentProp } from "@/types/commentType";
 
 // Update the interface to match potential backend response
 export interface Post {
@@ -30,10 +32,12 @@ export interface Post {
 
 export default function PostScreen() {
   const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<CommentProp[]>([])
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   const { id } = useLocalSearchParams<{ id: string }>();
+    const apiURL = process.env.EXPO_PUBLIC_API_URL;
   
   const getPost = async () => {
     if (!id) {
@@ -76,6 +80,35 @@ export default function PostScreen() {
   useEffect(() => {
     getPost();
   }, [id]);
+
+  const fetchComment = async () => {
+    const token = await AsyncStorage.getItem("authToken")
+    try {
+      const response = await axios.get(`${apiURL}/v1/post/${id}/comments`, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+        
+      )
+      if  (Array.isArray(response.data.comments)) {
+        setComments(response.data.comments)
+      }
+      else {
+        console.warn("Unexpected result", response.data)
+        setComments([])
+      }
+      console.log(response.data.comments)
+    }
+    catch(error){
+      console.error(error)
+    }
+  }
+
+  useEffect(() =>{
+    fetchComment();
+  }, [id])
 
   if (loading) {
     return (
@@ -120,7 +153,17 @@ export default function PostScreen() {
         ) : (
           <Text>Post not found</Text>
         )}
-        <Comment />
+        <>
+        
+        {comments.map((comment) => (
+          <Comment 
+            prop={{
+              text: comment.text,
+              post_id: comment.post_id
+            }}
+
+          />
+        ))}</>
         <CommentInput postId={id}/>
       </ScrollView>
     </SafeAreaWrapper>
