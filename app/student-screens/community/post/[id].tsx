@@ -16,7 +16,7 @@ import { CommentInput } from "@/components/Post/input";
 
 // Update the interface to match potential backend response
 export interface Post {
-  id: string;
+  id: number;
   posted_by?: {
     first_name?: string;
     last_name?: string;
@@ -121,7 +121,7 @@ export default function PostScreen() {
           <Text>Post not found</Text>
         )}
         <Comment />
-        <CommentInput />
+        <CommentInput postId={id}/>
       </ScrollView>
     </SafeAreaWrapper>
   );
