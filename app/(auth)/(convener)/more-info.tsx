@@ -8,6 +8,7 @@ import { BackArrowIcon } from '@/assets/icons';
 import { Link } from 'expo-router';
 
 const MoreInfo = () => {
+  const options = ["Enterprenuer", "self-employed"]
   return (
     <SafeAreaWrapper>
       <View style={{ marginTop: 24 }}>
@@ -37,13 +38,24 @@ const MoreInfo = () => {
           </Text>
         </View>
         <View style={{ gap: 24 }}>
-          <DropdownInput />
-          <DropdownInput />
-          <Input label="Community URL" placeholder="muhammads-community" />
+          
+          <View>
+            <Text style={styles.label}>Which of this sounds most like you?</Text>
+            <DropdownInput />
+          </View>
+          <View>
+            <Text style={styles.label}>What's your goal with Cohortle?</Text>
+            <DropdownInput />
+          </View>
+          <View>
+            <Text style={styles.label}>Hoiw did you hear about Cohortle?</Text>
+            <DropdownInput />
+          </View>
+          {/* <Input label="Community URL" placeholder="muhammads-community" /> */}
         </View>
       </View>
 
-      <Link asChild href="/convener-screens">
+      <Link asChild href="/community-structure">
         <Pressable
           style={{
             borderWidth: 1,
@@ -77,4 +89,12 @@ const MoreInfo = () => {
 
 export default MoreInfo;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  
+  label: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#391D65',
+    marginBottom: 8,
+  }
+});

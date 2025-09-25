@@ -11,18 +11,18 @@ import axios from 'axios';
 const CommunityInfo = () => {
 
   const apiURL = process.env.EXPO_PUBLIC_API_URL;
-  const handleComunityCreate = async () => {
-    // Handle community creation logic here
-    try {
-      const response = await axios.post(`${apiURL}/v1/api/auth/login`, {
-        email,
-        password,
-      });
-    }
-    catch (error) {
-      console.error('Error during login:', error);
-    }
-  }
+  // const handleComunityCreate = async () => {
+  //   // Handle community creation logic here
+  //   try {
+  //     const response = await axios.post(`${apiURL}/v1/api/auth/login`, {
+  //       email,
+  //       password,
+  //     });
+  //   }
+  //   catch (error) {
+  //     console.error('Error during login:', error);
+  //   }
+  // }
   return (
     <SafeAreaWrapper>
       <View style={{ marginTop: 24 }}>

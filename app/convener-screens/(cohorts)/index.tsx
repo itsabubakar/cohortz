@@ -188,12 +188,12 @@ const Cohort = ({
   return (
     <TouchableOpacity
       onPress={() => router.push(route)}
-      style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}
+      style={{ flexDirection: 'column', gap: 16, alignItems: "flex-start" }}
     >
       <View style={styles.profileImage} />
-      <View>
+      <View style={{}}>
         <Text
-          style={{ fontFamily: 'DMSansMedium', fontSize: 12, color: '#1F1F1F' }}
+          style={{ fontFamily: 'DMSansMedium', fontSize: 11, color: '#1F1F1F' }}
         >
           Branding & Brand Design
         </Text>
@@ -205,7 +205,6 @@ const Cohort = ({
         style={{
           flexDirection: 'row',
           gap: 16,
-          marginLeft: 'auto',
           alignItems: 'center',
         }}
       >
@@ -222,8 +221,8 @@ const Cohort = ({
 
 const styles = StyleSheet.create({
   profileImage: {
-    height: 40,
-    width: 40,
+    height: 160,
+    width: 160,
     backgroundColor: '#F2750D',
     borderRadius: 8,
   },
