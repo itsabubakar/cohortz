@@ -104,7 +104,7 @@ const Welcome = (props: Props) => {
           backdropComponent={renderBackdrop}
         >
           <BottomSheetView style={styles.contentContainer}>
-            <Link href="/student-screens/community/upload" asChild>
+            <Link href="/convener-screens/(cohorts)" asChild>
               <Button
                 style={{ marginTop: 16, marginBottom: 16 }}
                 onPress={openBottomSheet}

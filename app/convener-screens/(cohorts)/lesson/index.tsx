@@ -6,6 +6,7 @@ import BottomSheet, {
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
+import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
@@ -156,6 +157,15 @@ const Index = (props: Props) => {
               label="Lesson Description"
               placeholder="Describe what your lesson is about..."
             />
+            <View>
+              <Text>Cohorts Group</Text>
+              <View style={{borderWidth: 1, borderRadius: 10, borderColor: "black", width: "auto", height: "auto"}}>
+                <Picker>
+                  <Picker.Item label='Select option' value="" />
+                </Picker>
+
+              </View>
+            </View>
           </View>
           <View style={{ alignItems: 'center' }}>
             <TouchableOpacity
