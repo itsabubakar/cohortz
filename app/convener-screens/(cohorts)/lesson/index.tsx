@@ -18,7 +18,7 @@ type Props = {};
 const Index = (props: Props) => {
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [lessons, setLessons] = useState([1, 1, 1, 2, 3, 4]);
+  const [lessons, setLessons] = useState([1]);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const handleSheetChanges = useCallback((index: number) => {
@@ -232,7 +232,7 @@ const Lesson = ({ onOpenBottomSheet }: { onOpenBottomSheet: () => void }) => {
   const router = useRouter();
   return (
     <TouchableOpacity
-      onPress={() => router.push('/convener-screens/lesson/create-module')}
+      onPress={() => router.push('/convener-screens/lesson/dashboard')}
       style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}
     >
       <View style={styles.profileImage} />
@@ -240,7 +240,7 @@ const Lesson = ({ onOpenBottomSheet }: { onOpenBottomSheet: () => void }) => {
         <Text
           style={{ fontFamily: 'DMSansMedium', fontSize: 12, color: '#1F1F1F' }}
         >
-          Branding & Brand Design
+          Psychology Of Colors
         </Text>
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
           <Text
@@ -251,10 +251,10 @@ const Lesson = ({ onOpenBottomSheet }: { onOpenBottomSheet: () => void }) => {
               fontStyle: 'italic',
             }}
           >
-            Draft
+            3 Modules
           </Text>
           <Text style={{ color: '#8D9091', marginTop: 4, fontSize: 10 }}>
-            1:30 min
+            200 memebers
           </Text>
         </View>
       </View>
