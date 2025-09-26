@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaWrapper } from "@/HOC";import { Back, Close, Options, Plus, PlusSmall } from '@/assets/icons';
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -7,12 +7,24 @@ import { X } from "lucide-react-native";
 
 export default function Dashboard() {
     const router = useRouter()
-    const [isModalVisible, setModalVisible] = useState(true);
+    const [isModalVisible, setModalVisible] = useState(false);
     const [courseType, setCourseType] = useState("self-paced")
+    const [setting, openSetting] = useState(true)
+     const [visible, setVisible] = useState(false);
+
+     const handleVisible = () => setVisible(!visible);
+    const menuItems = [
+        { icon: <Ionicons name="lock-closed-outline" size={22} color="#4B0082" />, label: "Access", right: "Draft" },
+        { icon: <Ionicons name="link-outline" size={22} color="#4B0082" />, label: "Copy URL" },
+        { icon: <Ionicons name="book-outline" size={22} color="#4B0082" />, label: "Lessons" },
+        { icon: <Ionicons name="card-outline" size={22} color="#4B0082" />, label: "Paywall" },
+        { icon: <Ionicons name="options-outline" size={22} color="#4B0082" />, label: "Customise" },
+        { icon: <Ionicons name="people-outline" size={22} color="#4B0082" />, label: "Learners" },
+    ];
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
-  };
+    };
     const courseOptions = [
     {
       key: "self-paced",
@@ -29,7 +41,7 @@ export default function Dashboard() {
       title: "Scheduled",
       description: "Courses run on a set schedule with live sessions",
     },
-  ];
+    ];
     const getButtonStyle = (isActive: any) => ({
     width: 270, // fallback for string percentage, but better to use number below
     marginTop: 20,
@@ -38,7 +50,7 @@ export default function Dashboard() {
     padding: 12,
     borderRadius: 8,
     borderColor: isActive ? "#391D65" : "black",
-  });
+    });
 
   // Recommended: use flex or number for width
   // const getButtonStyle = (isActive: any) => ({
@@ -81,6 +93,7 @@ export default function Dashboard() {
                 </Text>
                 <TouchableOpacity
                 style={{ marginLeft: 'auto' }}
+                onPress={handleVisible}
                 >
                 <Plus />
                 </TouchableOpacity>
@@ -161,6 +174,41 @@ export default function Dashboard() {
                 </View>
             </View>)
         }
+        <Modal
+            visible={visible}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setVisible(false)}
+        >
+            <View style={styles.overlay}>
+            <View style={styles.sheet}>
+                {/* Close button */}
+                <TouchableOpacity style={styles.closeBtn} onPress={() => setVisible(false)}>
+                <Ionicons name="close-outline" size={26} color="#4B0082" />
+                </TouchableOpacity>
+
+                {/* Drag handle */}
+                <View style={styles.handle} />
+
+                {/* Menu items */}
+                {menuItems.map((item, idx) => (
+                <TouchableOpacity key={idx} style={styles.menuRow}>
+                    <View style={styles.rowLeft}>
+                        {item.icon}
+                        <Text style={styles.label}>{item.label}</Text>
+                    </View>
+                    {item.right && <Text style={styles.rightText}>{item.right}</Text>}
+                </TouchableOpacity>
+                ))}
+
+                {/* Delete */}
+                <TouchableOpacity style={styles.menuRow}>
+                    <MaterialIcons name="delete-outline" size={22} color="red" />
+                    <Text style={styles.deleteText}>Delete community</Text>
+                </TouchableOpacity>
+            </View>
+            </View>
+        </Modal>
     </SafeAreaWrapper>
   );
 }
@@ -176,6 +224,11 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     },
+    settingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
     container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -253,4 +306,47 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     textAlign: "center",
   },
+  overlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  sheet: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+  },
+  handle: {
+    alignSelf: "center",
+    width: 50,
+    height: 4,
+    backgroundColor: "#ddd",
+    borderRadius: 2,
+    marginBottom: 16,
+  },
+  openBtn: {
+    padding: 12,
+    backgroundColor: "#4B0082",
+    borderRadius: 8,
+  },
+  closeBtn: {
+    position: "absolute",
+    right: 16,
+    top: 16,
+    zIndex: 1,
+  },
+  menuRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#eee",
+  },
+  rowLeft: { flexDirection: "row", alignItems: "center" },
+  label: { marginLeft: 12, fontSize: 16, color: "#111" },
+  rightText: { fontSize: 14, color: "#555" },
+  deleteText: { marginLeft: 12, fontSize: 16, color: "red" },
+
 });
