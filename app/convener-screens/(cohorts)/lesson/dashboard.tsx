@@ -202,7 +202,7 @@ export default function Dashboard() {
                 ))}
 
                 {/* Delete */}
-                <TouchableOpacity style={styles.menuRow}>
+                <TouchableOpacity style={styles.menuRow} onPress={() => {router.push('/convener-screens/(cohorts)/lesson/delete')}}>
                     <MaterialIcons name="delete-outline" size={22} color="red" />
                     <Text style={styles.deleteText}>Delete community</Text>
                 </TouchableOpacity>
