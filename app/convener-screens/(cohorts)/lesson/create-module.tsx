@@ -13,16 +13,16 @@ const Index = (props: Props) => {
   const router = useRouter();
   const [video, setVideo] = useState<any>(null); // Store selected file info
 
-  const handlePickVideo = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: 'video/*', // Only allow video files
-      copyToCacheDirectory: true,
-      multiple: false,
-    });
-    if (!result.canceled && result.assets && result.assets[0]) {
-      setVideo(result.assets[0]); // Store video in state
-    }
-  };
+  // const handlePickVideo = async () => {
+  //   const result = await DocumentPicker.getDocumentAsync({
+  //     type: 'video/*', // Only allow video files
+  //     copyToCacheDirectory: true,
+  //     multiple: false,
+  //   });
+  //   if (!result.canceled && result.assets && result.assets[0]) {
+  //     setVideo(result.assets[0]); // Store video in state
+  //   }
+  // };
 
   // Utility to display file size in MB
   const formatSize = (size: number) => {
@@ -55,11 +55,14 @@ const Index = (props: Props) => {
           style={{
             fontFamily: 'DMSansSemiBold',
             fontSize: 16,
-            marginBottom: 16,
           }}
         >
-          Create Lesson
+          Module
         </Text>
+        <Text
+          style={{
+            marginBottom: 16,
+          }}>Course type: self-paced</Text>
         {/* Conditional rendering based on video selection */}
         {!video ? (
           <View
@@ -83,7 +86,7 @@ const Index = (props: Props) => {
                 borderColor: '#DABCFF',
                 borderWidth: 1,
               }}
-              onPress={handlePickVideo}
+              onPress={() => {}}
             >
               <Text>Add lesson</Text>
             </TouchableOpacity>
@@ -114,7 +117,7 @@ const Index = (props: Props) => {
                 borderColor: '#DABCFF',
                 borderWidth: 1,
               }}
-              onPress={handlePickVideo}
+              onPress={() => {}}
             >
               <Text>Replace content</Text>
             </TouchableOpacity>
