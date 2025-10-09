@@ -12,35 +12,36 @@ import { Button } from '@rneui/themed';
 import { colors } from '@/utils/color';
 import { SlideModal } from '@/components/Modal';
 import { OptionModal } from '@/components/optionModal';
+import { DropdownInput } from '@/components/Form';
+import Dropdown from '@/components/dropdown';
 
 type Props = {};
 
 const Index = (props: Props) => {
   const [moduleModal, setModuleModal] = useState(false)
   const [optionModal, setOptionModal] = useState(0)
-  const [lessonModal, setLessonModal] = useState(true)
+  const [lessonModal, setLessonModal] = useState(false)
+  const [status, setStatus] = useState<'published' | 'draft'>('published');
+
+  const handleStatusChange = (newStatus: 'published' | 'draft') => {
+    setStatus(newStatus);
+    console.log('Status changed to:', newStatus);
+  };
+  
   const handleModuleModal = () => {
     setModuleModal(!moduleModal)
   }
+  
   const handleLessonModal = () => {
     setLessonModal(!lessonModal)
   }
-  const openOptionModal =(modal: number) => {
+  
+  const openOptionModal = (modal: number) => {
     setOptionModal(modal)
+    // Close the bottom option modal when opening a slide modal
+    setModuleModal(false);
+    setLessonModal(false);
   }
-  // const router = useRouter();
-  // const [video, setVideo] = useState<any>(null); // Store selected file info
-
-  // const handlePickVideo = async () => {
-  //   const result = await DocumentPicker.getDocumentAsync({
-  //     type: 'video/*', // Only allow video files
-  //     copyToCacheDirectory: true,
-  //     multiple: false,
-  //   });
-  //   if (!result.canceled && result.assets && result.assets[0]) {
-  //     setVideo(result.assets[0]); // Store video in state
-  //   }
-  // };
 
   // Utility to display file size in MB
   const formatSize = (size: number) => {
@@ -48,8 +49,8 @@ const Index = (props: Props) => {
     return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   };
 
-  return (<ScrollView
-   style={styles.container}>
+  return (
+    <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Modules</Text>
@@ -78,10 +79,9 @@ const Index = (props: Props) => {
             <Ionicons name="menu-outline" size={20} color="#000" />
             <Text style={styles.moduleName}>MODULE NAME</Text>
             <TouchableOpacity style={styles.addNew}>
-              <Text style={styles.addNewText}>Add new</Text>
+              <Text style={styles.addNewText}>Add lesson</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleModuleModal}>
-              
               <Ionicons name="ellipsis-vertical" size={18} color="#8E8E8E" />
             </TouchableOpacity>
           </View>
@@ -93,12 +93,13 @@ const Index = (props: Props) => {
                 <Ionicons name="menu-outline" size={16} color="#8E8E8E" />
                 <Text style={styles.lessonText}>{lesson}</Text>
                 <TouchableOpacity onPress={handleLessonModal}>
-                  
                   <Ionicons name="ellipsis-vertical" size={16} color="#8E8E8E" />
                 </TouchableOpacity>
               </View>
             ))}
           </View>
+
+          {/* Module Option Modal */}
           <OptionModal
             isVisible={moduleModal}
             onBackdropPress={handleModuleModal}
@@ -107,57 +108,102 @@ const Index = (props: Props) => {
               <Text onPress={() => openOptionModal(1)}>Rename Module</Text>
               <Text onPress={() => openOptionModal(2)}>Delete Module</Text>
             </SafeAreaView>
-
           </OptionModal>
+
+          {/* Lesson Option Modal */}
           <OptionModal
-            isVisible={moduleModal}
-            onBackdropPress={handleModuleModal}
+            isVisible={lessonModal}
+            onBackdropPress={handleLessonModal}
           >
             <SafeAreaView style={{backgroundColor: "white", padding: 20, paddingTop: 40, borderTopEndRadius: 20, borderTopLeftRadius: 20, gap: 10}}>
-              <Text onPress={() => openOptionModal(1)}>Rename Module</Text>
-              <Text onPress={() => openOptionModal(2)}>Delete Module</Text>
+              <View>
+                <Dropdown value={status} onChange={handleStatusChange} />
+              </View>
+              <Text onPress={() => openOptionModal(4)}>Rename</Text>
+              <Text onPress={() => openOptionModal(5)}>Delete</Text>
             </SafeAreaView>
-
           </OptionModal>
+
+          {/* Slide Modals */}
           <SlideModal
             isVisible={optionModal !== 0}
             onBackdropPress={() => {setOptionModal(0)}}
           >
+            {/* Rename Module Modal */}
             {optionModal === 1 && (
-              
               <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
-                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}} >Rename Module</Text>
+                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Rename Module</Text>
                 <View style={{gap: 5}}>
                   <Text style={{fontWeight: 600}}>Title</Text>
                   <TextInput 
-                  style={{borderWidth: 1, paddingHorizontal: 13, paddingVertical: 8, borderRadius: 8, borderColor: "grey" }}
-                  placeholder='Module'/>
+                    style={{borderWidth: 1, paddingHorizontal: 13, paddingVertical: 8, borderRadius: 8, borderColor: "grey" }}
+                    placeholder='Module'
+                  />
                 </View>
                 <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.primary}}>
                   <Text style={{color: colors.white, textAlign: "center"}}>Save Changes</Text>
                 </TouchableOpacity>
               </View>
             )}
+
+            {/* Delete Module Modal */}
             {optionModal === 2 && (
-              
-              <View style={{width: "100%", backgroundColor: "white", padding: 10, borderRadius: 8, paddingBottom: 30, gap: 32}}>
-                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}} >Delete module</Text>
+              <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
+                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Delete module</Text>
                 <View style={{gap: 5, marginBottom: 20}}>
-                  <Text>Are you sure you want to delete "Module 1" and allof it's lessons from this curriculum?</Text>
+                  <Text>Are you sure you want to delete "Module 1" and all of it's lessons from this curriculum?</Text>
                 </View>
                 <View style={{gap: 10}}>
                   <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.red}}>
                     <Text style={{color: colors.white, textAlign: "center"}}>Confirm</Text>
                   </TouchableOpacity>
-
-                  <TouchableOpacity style={{borderRadius: 50, padding: 12, borderColor: colors.primary, borderWidth: 1}}>
+                  <TouchableOpacity 
+                    style={{borderRadius: 50, padding: 12, borderColor: colors.primary, borderWidth: 1}}
+                    onPress={() => setOptionModal(0)}
+                  >
                     <Text style={{textAlign: "center"}}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             )}
 
+            {/* Rename Lesson Modal */}
+            {optionModal === 4 && (
+              <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
+                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Rename Lesson</Text>
+                <View style={{gap: 5}}>
+                  <Text style={{fontWeight: 600}}>Title</Text>
+                  <TextInput 
+                    style={{borderWidth: 1, paddingHorizontal: 13, paddingVertical: 8, borderRadius: 8, borderColor: "grey" }}
+                    placeholder='Lesson 1'
+                  />
+                </View>
+                <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.primary}}>
+                  <Text style={{color: colors.white, textAlign: "center"}}>Save Changes</Text>
+                </TouchableOpacity>
+              </View>
+            )}
 
+            {/* Delete Lesson Modal */}
+            {optionModal === 5 && (
+              <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
+                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Delete Lesson</Text>
+                <View style={{gap: 5, marginBottom: 20}}>
+                  <Text>Are you sure you want to delete "Lesson 1" from this module?</Text>
+                </View>
+                <View style={{gap: 10}}>
+                  <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.red}}>
+                    <Text style={{color: colors.white, textAlign: "center"}}>Confirm</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={{borderRadius: 50, padding: 12, borderColor: colors.primary, borderWidth: 1}}
+                    onPress={() => setOptionModal(0)}
+                  >
+                    <Text style={{textAlign: "center"}}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
           </SlideModal>
         </View>
       </View>
@@ -166,7 +212,6 @@ const Index = (props: Props) => {
 };
 
 export default Index;
-
 
 const styles = StyleSheet.create({
   container: {
