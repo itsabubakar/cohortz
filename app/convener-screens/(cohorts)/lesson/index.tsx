@@ -1,6 +1,7 @@
 import { Back, Close, Options, Plus, PlusSmall } from '@/assets/icons';
 import { Input } from '@/components/Form';
 import { SafeAreaWrapper } from '@/HOC';
+import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -9,18 +10,52 @@ import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typesc
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Switch, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from 'react-native';
 import Modal from 'react-native-modal';
+import { X } from "lucide-react-native";
 
 type Props = {};
-
+    const courseOptions = [
+    {
+      key: "self-paced",
+      title: "Self-paced",
+      description: "Learners can start immediately and learn at their own pace",
+    },
+    {
+      key: "structured",
+      title: "Structured",
+      description: "Learning follows a structured, guided path with milestones",
+    },
+    {
+      key: "scheduled",
+      title: "Scheduled",
+      description: "Courses run on a set schedule with live sessions",
+    },
+    ];
+        const getButtonStyle = (isActive: any) => ({
+    width: 270, // fallback for string percentage, but better to use number below
+    marginTop: 20,
+    borderWidth: 1,
+    backgroundColor: isActive ? "#EDE9FE" : "white",
+    padding: 12,
+    borderRadius: 8,
+    borderColor: isActive ? "#391D65" : "black",
+    });
 const Index = (props: Props) => {
+  const [courseType, setCourseType] = useState("self-paced")
+  const [typeModal, openTypeModal] = useState(false)
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
   const [lessons, setLessons] = useState([1]);
-
+  const [page, setPage] = useState(3)
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const [cohortGroup, setCohortGroup] = useState("Branding & Branding Design");
+  const [communityAccess, setCommunityAccess] = useState(false);
+
+  const handleTypeModal = () => {
+    openTypeModal(!typeModal)
+  }
   const handleSheetChanges = useCallback((index: number) => {
     // Update state based on the index value
     console.log(index);
@@ -83,7 +118,7 @@ const Index = (props: Props) => {
           >
             <PlusSmall />
             <Text style={{ color: '#391D65', fontFamily: 'DMSansSemiBold' }}>
-              Create more lessons
+              Create Community
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -99,11 +134,10 @@ const Index = (props: Props) => {
               marginBottom: 8,
             }}
           >
-            No lessons yet
+            No communities yet
           </Text>
           <Text style={{ color: '#1F1F1F', textAlign: 'center', fontSize: 14 }}>
-            Create lessons and let the discussion begin. Create lessons for
-            different topics to help members connect and engage.
+            Create communities and let the discussion begin. Create communities for different topics to help members connect and engage.
           </Text>
           <TouchableOpacity
             style={{
@@ -119,72 +153,186 @@ const Index = (props: Props) => {
             onPress={toggleModal}
           >
             <Text style={{ color: '#fff', fontFamily: 'DMSansSemiBold' }}>
-              Create lessons
+              Create community
             </Text>
           </TouchableOpacity>
         </View>
       )}
 
       <Modal isVisible={isModalVisible}>
-        <View
-          style={{
-            backgroundColor: 'white',
-            // height: 500,
-            paddingBottom: 40,
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
-          <TouchableOpacity
-            onPress={toggleModal}
-            style={{ alignItems: 'flex-end' }}
-          >
-            <Close />
-          </TouchableOpacity>
-          <Text
+          <View
             style={{
-              color: '#1F1F1F',
-              fontFamily: 'DMSansSemiBold',
-              fontSize: 20,
-              textAlign: 'center',
+              backgroundColor: 'white',
+              // height: 500,
+              paddingBottom: 40,
+              padding: 16,
+              borderRadius: 8,
+              alignItems: "center"
             }}
           >
-            Create Lesson
-          </Text>
-          <View style={{ gap: 16, marginTop: 26 }}>
-            <Input label="Lesson Title" placeholder="Intro to Branding" />
-            <Input
-              label="Lesson Description"
-              placeholder="Describe what your lesson is about..."
-            />
-            <View>
-              <Text>Cohorts Group</Text>
-              <View style={{borderWidth: 1, borderRadius: 10, borderColor: "black", width: "auto", height: "auto"}}>
-                <Picker>
-                  <Picker.Item label='Select option' value="" />
-                </Picker>
-
-              </View>
-            </View>
-          </View>
-          <View style={{ alignItems: 'center' }}>
             <TouchableOpacity
+              onPress={toggleModal}
+              style={{ alignItems: 'flex-end' }}
+            >
+              <Close />
+            </TouchableOpacity>
+            <Text
               style={{
-                borderWidth: 1,
-                borderColor: '#F8F1FF',
-                paddingVertical: 14,
-                alignItems: 'center',
-                borderRadius: 32,
-                marginTop: 32,
-                backgroundColor: '#391D65',
-                width: '70%',
+                color: '#1F1F1F',
+                fontFamily: 'DMSansSemiBold',
+                fontSize: 20,
+                textAlign: 'center',
               }}
             >
-              <Text style={{ color: '#fff' }}>Create</Text>
-            </TouchableOpacity>
+              {page === 1 ? "Choose community Type" : "Choose community structure"}
+            </Text>
+            {page == 1 && (
+              <ScrollView>
+              
+                <View style={{ gap: 16, marginTop: 26 }}>
+                  <TouchableOpacity style={{backgroundColor: "whitesmoke", paddingHorizontal: 12, paddingVertical: 10, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 10}}>
+                    <Ionicons name='book' />
+                    <Text>Course</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            )}
+            {page === 2 && (
+              
+                <View
+                  style={{}}>
+                    <View style={{
+                        backgroundColor: "#fff",
+                        borderRadius: 12,
+                        }}>
+                            {courseOptions.map((option) => {
+                              const isActive = courseType === option.title;
+                              return (
+                                <TouchableOpacity
+                                  key={option.key}
+                                  onPress={() => setCourseType(option.title)}
+                                  style={getButtonStyle(isActive)}
+                                >
+                                  <Text style={{ fontSize: 18 }}>{option.title}</Text>
+                                  <Text style={{ color: "#6B7280", marginTop: 5 }}>
+                                    {option.description}
+                                  </Text>
+                                </TouchableOpacity>
+                              );
+                            })}
+                            
+                    </View>
+                </View>
+            )}
+            {page === 3 && (
+              <ScrollView contentContainerStyle={styles.container}>
+                {/* Course name */}
+                <Text style={styles.label}>Course name</Text>
+                <TextInput
+                  placeholder="Your course name"
+                  style={styles.input}
+                  placeholderTextColor="#888"
+                />
+
+                {/* Cohort Description */}
+                <Text style={styles.label}>Cohort Description</Text>
+                <TextInput
+                  placeholder="Describe what your cohort is about..."
+                  style={[styles.input, styles.textarea]}
+                  placeholderTextColor="#888"
+                  multiline
+                />
+
+                {/* Cohort group */}
+                <Text style={styles.label}>Cohort group</Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={cohortGroup}
+                    onValueChange={(itemValue) => setCohortGroup(itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Branding & Branding Design" value="Branding & Branding Design" />
+                    <Picker.Item label="Other Cohort" value="Other Cohort" />
+                    <Picker.Item label="Other cohort" value="Other cohort" />
+                    <Picker.Item label="Other cohort" value="Other cohort2" />
+                    <Picker.Item label="Other cohort" value="Other cohort3" />
+                  </Picker>
+                </View>
+
+                {/* Community Access */}
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>Community access</Text>
+                  <Switch
+                    value={communityAccess}
+                    onValueChange={setCommunityAccess}
+                    thumbColor={"#f4f3f4"}
+                    trackColor={{ false: "#d3d3d3", true: "#B085EF" }}
+                  />
+                </View>
+
+                <Text style={styles.hint}>
+                  Add members from this cohort
+                </Text>
+
+                {/* Info text */}
+                <Text style={styles.info}>
+                  The Community will be created in draft mode and will not be visible to your learners.
+                  You can update access settings after you create the community.
+                </Text>
+              </ScrollView>
+            )}
           </View>
-        </View>
+          
+                <View style={{ alignItems: 'center' }}>
+                  <TouchableOpacity
+                    style={{
+                      borderWidth: 1,
+                      borderColor: '#F8F1FF',
+                      paddingVertical: 14,
+                      alignItems: 'center',
+                      borderRadius: 32,
+                      marginTop: 32,
+                      backgroundColor: '#391D65',
+                      width: '70%',
+                    }}
+                    onPress={handleTypeModal}
+                  >
+                    <Text style={{ color: '#fff' }}>Next</Text>
+                  </TouchableOpacity>
+                </View>
       </Modal>
+      {/* <Modal isVisible={typeModal}>
+            <View
+              style={{}}>
+                <View style={{
+                    backgroundColor: "#fff",
+                    padding: 20,
+                    borderRadius: 12,
+                    }}>
+                        <TouchableOpacity onPress={toggleModal} style={{alignSelf: "flex-end", borderWidth: 2, borderRadius: 50, padding: 2, borderColor: "black"}}>
+                            <X size={16} color="black" />
+                        </TouchableOpacity>
+                        <Text style={{fontSize: 20, fontWeight: 700, textAlign: "center"}}>Choose course type</Text>
+                      
+                        {courseOptions.map((option) => {
+                          const isActive = courseType === option.title;
+                          return (
+                            <TouchableOpacity
+                              key={option.key}
+                              onPress={() => setCourseType(option.title)}
+                              style={getButtonStyle(isActive)}
+                            >
+                              <Text style={{ fontSize: 18 }}>{option.title}</Text>
+                              <Text style={{ color: "#6B7280", marginTop: 5 }}>
+                                {option.description}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                        
+                </View>
+            </View>
+      </Modal> */}
       <BottomSheet
         ref={bottomSheetRef}
         index={0} // Start fully collapsed
@@ -283,5 +431,54 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     padding: 16,
+  },
+  
+  container: {
+    backgroundColor: "#fff",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 6,
+    marginTop: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 14,
+    color: "#000",
+  },
+  textarea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+  },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 24,
+  },
+  hint: {
+    fontSize: 12,
+    color: "#777",
+    marginTop: 4,
+  },
+  info: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 20,
+    lineHeight: 18,
   },
 });

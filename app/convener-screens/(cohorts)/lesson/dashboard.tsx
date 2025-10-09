@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaWrapper } from "@/HOC";import { Back, Close, Options, Plus, PlusSmall } from '@/assets/icons';
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { X } from "lucide-react-native";
 
@@ -100,7 +100,7 @@ export default function Dashboard() {
             </View>
         </View>
         {/* Header */}
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             
             <View style={styles.headerRow}>
                 <Text style={styles.headerTitle}>Course Dashboard</Text>
@@ -116,9 +116,7 @@ export default function Dashboard() {
                     <Text style={styles.statusText}>Status: Draft</Text>
                 </View>
                 <MaterialIcons name="menu-book" size={16} color="#6B7280" />
-                <Text style={styles.courseType}>
-                    Course type: <Text style={styles.courseTypeUnderline}>{courseType}</Text>
-                </Text>
+                <Link href={"/convener-screens/lesson/create-module"} >here</Link>
             </View>
 
             {/* Waitlist */}
@@ -142,7 +140,7 @@ export default function Dashboard() {
                     Engagement data will show up here once you publish your course.
                 </Text>
             </View>
-        </View>
+        </ScrollView>
         {isModalVisible && (
             <View
             style={styles.backdrop}>
@@ -233,7 +231,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 16,
-    paddingTop: 32,
+    marginTop: 32,
   },
   headerRow: {
     flexDirection: "row",

@@ -1,111 +1,218 @@
 import { SafeAreaWrapper } from "@/HOC";
 import { Text } from "@/theme/theme";
-import { Picker } from "@react-native-picker/picker";
 import { Link } from "expo-router";
 import { useState } from "react";
-
+import Modal from "react-native-modal";
 import {
-  Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   TextInput,
-  TouchableHighlight,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
 
-const uploadPost = () => {
-    const [modal, setModal] = useState(true)
+const UploadPost = () => {
+  const [audienceModal, setAudienceModal] = useState(false);
+  const [replyModal, setReplyModal] = useState(false);
 
-    const handleModal = () => {
-        setModal(!modal)
-    }
+  const toggleAudienceModal = () => setAudienceModal(!audienceModal);
+  const toggleReplyModal = () => setReplyModal(!replyModal);
 
+  return (
+    <SafeAreaWrapper>
+      {/* Header */}
+      <View style={{ marginVertical: 16 }}>
+        <Link
+          href="/(auth)/login"
+          style={{ color: "#B085EF", fontSize: 18, fontWeight: "600" }}
+        >
+          X <Text className="text-white">kksdw</Text>
+        </Link>
+      </View>
 
-    return (
-        <>
-        <SafeAreaWrapper>
-            <View style={{ marginVertical: 16 }}>
-                <Link href="/(auth)/login"  style={{ color: '#B085EF', fontSize: 18, fontWeight: '600' }}>
-                    X <Text className="text-white">kksdw</Text>
-                </Link>
-            </View>
-
-            {/* Content */}
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <Picker style={{
-                    borderWidth: 1, borderRadius: 4, borderColor: "black", width: 140
-                }}>
-                    <Picker.Item label="Everyone" value="web design"/>
-                    <Picker.Item label="Cohorts Only" value="web design"/>
-                </Picker>
-
-                <TextInput className=""
-                    numberOfLines={6}
-                    multiline={true}
-                    textAlignVertical="top"
-                    style={{}}
-                    placeholder="Write your post here"
-                />
-                
-            </ScrollView>
-            <View style={{position: "fixed", bottom: 1, paddingHorizontal: 5, paddingVertical: 4,  }}>
-                <Text>Everyone can reply </Text>
-                
-                <Link href={"/student-screens/community/upload"} style={{ position: 'absolute', right: 0, top: 0, padding: 8, borderRadius: 8, backgroundColor: '#E9D7FE' }}>
-                    <Text style={{fontWeight: 700, padding: 4 }}>Upload</Text>
-                </Link>
-            </View>
-
-        </SafeAreaWrapper>
-        
-            {modal && (
+      {/* Reply Modal */}
+      <Modal
+        isVisible={replyModal}
+        onBackdropPress={toggleReplyModal}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        style={styles.modal}
+      >
+        <View style={styles.replyContainer}>
+            <Text style={{ fontSize: 18, marginBottom: 10, fontWeight: 700, }}>Who can reply?</Text>
+            <Text>People mentioned can always reply</Text>
+            <View style={{gap: 5, marginTop: 5}}>
                 <TouchableOpacity
-                    onPress={handleModal}
-                    style={{width: "100%", height: "100%", backgroundColor: "black"}}>
-                    <View style={{ position: "absolute", bottom: 1, zIndex: 40, minHeight: 376, paddingTop: 20, paddingHorizontal: 10, width: "100%", backgroundColor: "grey"}}>
-                        <Text style={{fontSize: 24, fontWeight: 700, textAlign: "center"}}>Choose Audience</Text>
-                        <View>
-                            <Text>Everyone</Text>
-                        </View>
-
-                        <View style={{gap: 3}} >
-                            <Text style={{fontWeight: 600}} >My Communities</Text>
-                            <View style={{gap: 6}}>
-                                <View style={{flexDirection: "row", alignItems: "center", gap: 3}}>
-                                    <View style={styles.profileImage} />
-                                    <View>
-                                        <Text>Branding</Text>
-                                        <Text style={{ fontSize: 12 }}>500 memebers</Text>
-                                    </View>
-                                </View>
-                                <View style={{flexDirection: "row", alignItems: "center", gap: 3}}>
-                                    <View style={styles.profileImage} />
-                                    <View>
-                                        <Text>Branding</Text>
-                                        <Text className="" >500 memebers</Text>
-                                    </View> 
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                    onPress={toggleReplyModal}
+                    style={{
+                    padding: 12,
+                    borderRadius: 8,
+                    }}
+                >
+                    <Text style={{ fontWeight: "600" }}>Everyone</Text>
                 </TouchableOpacity>
-            )}</>
-    )
-}
+                <TouchableOpacity
+                    onPress={toggleReplyModal}
+                    style={{
+                    padding: 12,
+                    borderRadius: 8,
+                    }}
+                >
+                    <Text style={{ fontWeight: "600" }}>Nobody</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={toggleReplyModal}
+                    style={{
+                    padding: 12,
+                    borderRadius: 8,
+                    }}
+                >
+                    <Text style={{ fontWeight: "600" }}>only people you mentioned</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+      </Modal>
 
-export default uploadPost;
+      {/* Content */}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <TouchableOpacity
+          onPress={toggleAudienceModal}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
+            marginBottom: 16,
+          }}
+        >
+          <Text>Everyone</Text>
+        </TouchableOpacity>
+
+        <TextInput
+          numberOfLines={6}
+          multiline={true}
+          textAlignVertical="top"
+          style={{
+            borderColor: "#ddd",
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+          }}
+          placeholder="Write your post here"
+        />
+      </ScrollView>
+
+      {/* Bottom bar */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 20,
+          right: 20,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Text>Everyone can reply</Text>
+        <TouchableOpacity
+        //   onPress={toggleReplyModal}
+          style={{
+            backgroundColor: "#E9D7FE",
+            paddingVertical: 10,
+            paddingHorizontal: 20,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ fontWeight: "700" }}>Upload</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Audience Modal */}
+      <Modal
+        isVisible={audienceModal}
+        onBackdropPress={toggleAudienceModal}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        style={styles.bottomModal}
+      >
+        <View style={styles.bottomSheet}>
+          <Text style={styles.bottomSheetTitle}>Choose Audience</Text>
+
+          <View
+            style={{
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              borderTopWidth: 1,
+              borderBottomWidth: 1,
+              borderColor: "grey",
+            }}
+          >
+            <Text>Everyone</Text>
+          </View>
+
+          <View style={{ paddingHorizontal: 20, gap: 10 }}>
+            <Text style={{ fontWeight: "700", fontSize: 13 }}>
+              My Communities
+            </Text>
+
+            <View style={{ gap: 15 }}>
+              {["Branding", "Design"].map((community, i) => (
+                <View
+                  key={i}
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <View style={styles.profileImage} />
+                  <View>
+                    <Text>{community}</Text>
+                    <Text style={{ color: "grey", fontSize: 12 }}>
+                      500 members
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaWrapper>
+  );
+};
+
+export default UploadPost;
 
 const styles = StyleSheet.create({
   profileImage: {
     height: 40,
     width: 40,
-    backgroundColor: '#F2750D',
+    backgroundColor: "#F2750D",
     borderRadius: 8,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 16,
+  modal: {
+    justifyContent: "flex-end",
+    margin: 0
+  },
+  replyContainer: {
+    width: "100%",
+    backgroundColor: "white",
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
+    padding: 20,
+  },
+  bottomModal: {
+    justifyContent: "flex-end",
+    margin: 0,
+  },
+  bottomSheet: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 20,
+    paddingBottom: 40,
+    gap: 15,
+  },
+  bottomSheetTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
   },
 });
