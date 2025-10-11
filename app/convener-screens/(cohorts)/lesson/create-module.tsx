@@ -2,7 +2,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Back } from '@/assets/icons';
 import { SafeAreaWrapper } from '@/HOC';
 
-import { useRouter } from 'expo-router';
+import { Link, useNavigation, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from 'react-native';
@@ -14,6 +14,7 @@ import { SlideModal } from '@/components/Modal';
 import { OptionModal } from '@/components/optionModal';
 import { DropdownInput } from '@/components/Form';
 import Dropdown from '@/components/dropdown';
+import { NavHead } from '@/components/HeadRoute';
 
 type Props = {};
 
@@ -50,12 +51,15 @@ const Index = (props: Props) => {
   };
 
   return (
+    <SafeAreaWrapper>
+      
+            <NavHead text="kkk"/>
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Modules</Text>
         <Text style={styles.courseType}>
-          Course type: <Text style={styles.link}>Self-paced</Text>
+          Course type: <Text style={styles.link}>Self-paced</Text> 
         </Text>
       </View>
 
@@ -119,6 +123,7 @@ const Index = (props: Props) => {
               <View>
                 <Dropdown value={status} onChange={handleStatusChange} />
               </View>
+              <Link href={"/convener-screens/lesson/uploadLesson"}>Upload</Link>
               <Text onPress={() => openOptionModal(4)}>Rename</Text>
               <Text onPress={() => openOptionModal(5)}>Delete</Text>
             </SafeAreaView>
@@ -208,6 +213,7 @@ const Index = (props: Props) => {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaWrapper>
   );
 };
 

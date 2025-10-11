@@ -3,7 +3,9 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaWrapper } from "@/HOC";import { Back, Close, Options, Plus, PlusSmall } from '@/assets/icons';
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { X } from "lucide-react-native";
+import { Eclipse, X } from "lucide-react-native";
+import { NavHead } from "@/components/HeadRoute";
+import { colors } from "@/utils/color";
 
 export default function Dashboard() {
     const router = useRouter()
@@ -77,28 +79,7 @@ export default function Dashboard() {
   // });
   return (
     <SafeAreaWrapper>
-        <View style={{ backgroundColor: 'white', marginVertical: 16 }}>
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => router.back()}>
-                <Back />
-                </TouchableOpacity>
-                <Text
-                style={{
-                    color: '#391D65',
-                    fontFamily: 'DMSansSemiBold',
-                    marginLeft: 16,
-                }}
-                >
-                Branding & Branding Design
-                </Text>
-                <TouchableOpacity
-                style={{ marginLeft: 'auto' }}
-                onPress={handleVisible}
-                >
-                <Plus />
-                </TouchableOpacity>
-            </View>
-        </View>
+        <NavHead text="Branding & Design" icon={<Eclipse />} />
         {/* Header */}
         <ScrollView style={styles.container}>
             
@@ -116,7 +97,7 @@ export default function Dashboard() {
                     <Text style={styles.statusText}>Status: Draft</Text>
                 </View>
                 <MaterialIcons name="menu-book" size={16} color="#6B7280" />
-                <Link href={"/convener-screens/lesson/create-module"} >here</Link>
+                <Link style={{marginLeft: 10, textDecorationLine: "underline", color: colors.primary}} href={"/convener-screens/lesson/create-module"} >View Courses</Link>
             </View>
 
             {/* Waitlist */}
