@@ -15,6 +15,9 @@ import { Comment } from "@/components/Post/comments";
 import { CommentInput } from "@/components/Post/input";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommentProp } from "@/types/commentType";
+import { Ionicons } from "@expo/vector-icons";
+import { Scale } from "lucide-react-native";
+import { colors } from "@/utils/color";
 
 // Update the interface to match potential backend response
 export interface Post {
@@ -47,11 +50,13 @@ export default function PostScreen() {
     }
 
     const apiURL = process.env.EXPO_PUBLIC_API_URL;
+    const token = await AsyncStorage.getItem("authToken")
     try {
       const response = await axios.get(`${apiURL}/v1/posts/${id}`, {
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache"
+          "Cache-Control": "no-cache",
+          Authorization: `Bearer ${token}`,
         },
       });
       
@@ -103,6 +108,7 @@ export default function PostScreen() {
     }
     catch(error){
       console.error(error)
+      console.log("fail")
     }
   }
 
@@ -146,7 +152,7 @@ export default function PostScreen() {
           <Message
           postMessage={{
             id: post.id?.toString() || id || '',
-            posted_by: post.posted_by,
+            posted_by: post.posted_by as any,
             text: post.text || 'No content available',
           }}
           />
@@ -154,17 +160,25 @@ export default function PostScreen() {
           <Text>Post not found</Text>
         )}
         <>
-        
-        {comments.map((comment) => (
-          <Comment 
-            prop={{
-              text: comment.text,
-              post_id: comment.post_id,
-              user: comment.user
-            }}
-
-          />
-        ))}</>
+          {comments.length !== 0 ? (
+            comments.map((comment) => (
+              <Comment 
+                key={comment.id} // Don't forget the key prop!
+                prop={{
+                  id: comment.id,
+                  text: comment.text,
+                  post_id: comment.post_id,
+                  user: comment.user
+                }}
+              />
+            ))
+          ) : (
+            <View style={{alignItems: "center"}}>
+              <Ionicons name="chatbubble-ellipses" size={30} color={colors.purpleShade} />
+              <Text style={{fontWeight: 600, fontSize: 16}}>Be the first to comment</Text>
+            </View>
+          )}
+        </>
         <CommentInput postId={id}/>
       </ScrollView>
     </SafeAreaWrapper>
