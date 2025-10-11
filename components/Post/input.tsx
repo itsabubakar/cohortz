@@ -1,31 +1,40 @@
-import { Text, TextInput, View } from "react-native"
+import { Text, TextInput, TouchableOpacity, View } from "react-native"
 import { Button } from "../ui"
 import { useState } from "react"
 import { CommentProp } from "@/types/commentType"
 import { createComment } from "@/api/comment"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useRouter } from "expo-router"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Ionicons } from "@expo/vector-icons"
+import { colors } from "@/utils/color"
 interface FormProp {
   postId: string
 }
 export const CommentInput = ({postId}: FormProp) => {
     const [text, setText] = useState("")
     const [error, setError] = useState("")
-    const handleSubmit = async ( )=> {
+    const router = useRouter()
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: async (commentData: CommentProp) => {
         const token = await AsyncStorage.getItem("authToken")
-        if (!token) {
-            console.error("no token")
-            return
+        return createComment(commentData, postId, token!)
+        },
+        onSuccess: () => {
+        setText("")
+        // Invalidate and refetch comments
+        queryClient.invalidateQueries({ queryKey: ['comments', postId] })
         }
-        const payload: CommentProp = {
+    })
+
+    const handleSubmit = () => {
+        if (text.trim()) {
+        mutation.mutate({
             text: text.trim(),
             post_id: postId
-        }
-        try {
-            const res = await createComment(payload, postId, token)
-            console.log(res)
-        }
-        catch (err) {
-            console.error(err)
+        })
         }
     }
     return (
@@ -41,18 +50,23 @@ export const CommentInput = ({postId}: FormProp) => {
                 style={{
                     borderWidth: 1,
                     borderRadius: 5,
-                    borderColor: "black",
-                    width: 260
+                    borderColor: "#B085EF",
+                    width: 275,
+                    padding: 5
                 }}
             />
-            <Text
+            <TouchableOpacity style={{
+                alignItems: "center",
+                justifyContent: "center",
+            }}>
+                
+            <Ionicons
                 onPress={handleSubmit}
-                style={{
-                padding: 10,
-                backgroundColor: "#40135B",
-                color: "white",
-                borderRadius: 10
-            }}>Send</Text>
+                size={30}
+                color={colors.primary}
+                 name="paper-plane-outline" />
+            </TouchableOpacity>
+
 
         </View>
     )

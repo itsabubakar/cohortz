@@ -1,4 +1,5 @@
 import { CommentProp } from "@/types/commentType"
+import { colors } from "@/utils/color"
 import { backgroundColor } from "@shopify/restyle"
 import { View, StyleSheet, Text } from "react-native"
 
@@ -21,7 +22,9 @@ const styles = StyleSheet.create({
     container: {
         paddingVertical: 15,
         paddingHorizontal: 20,
-        borderColor: '#f0f0f0',
-        borderTopWidth: 1
+        borderColor: colors.purpleShade,
+        borderWidth: 1,
+        borderRadius: 8,
+
     }
 })
