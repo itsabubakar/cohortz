@@ -87,7 +87,7 @@ const SignUp = () => {
         setLoading(false)
         if (selectedRole === 'convener') {
           router.navigate({
-            pathname: '/convener/aboutpo',
+            pathname: '/(convener)/about',
             params: {token: response.data.token}
           });
         } else if (selectedRole === 'learner') {
