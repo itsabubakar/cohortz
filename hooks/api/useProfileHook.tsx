@@ -1,36 +1,36 @@
-// hooks/useProfileMutation.ts
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { profileService, UpdateProfileData } from '@/api/profile';
-import { useProfileStore } from '@/store/profileStore';
+// hooks/api/useProfileHook.ts
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getProfile } from '@/api/getProfile';
+import { updateProfile } from '@/api/profile';
+import ProfileProp from '@/types/profileType';
 
+// GET profile hook
+export const useProfile = () => {
+  return useQuery({
+    queryKey: ['profile'],
+    queryFn: getProfile,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Refresh profile hook
+export const useRefreshProfile = () => {
+  const queryClient = useQueryClient();
+  
+  return () => {
+    queryClient.invalidateQueries({ queryKey: ['profile'] });
+  };
+};
+
+// Update profile hook
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
-  const { setProfile, setLoading, setError, clearError } = useProfileStore();
 
   return useMutation({
-    mutationFn: (data: UpdateProfileData) => profileService.updateProfile(data),
-    onMutate: () => {
-      setLoading(true);
-      clearError();
-    },
-    onSuccess: (response) => {
-      if (!response.error) {
-        // Update local state with new profile data
-        setProfile({
-          firstName: response.message.FIRSTNAME,
-          lastName: response.message.LASTNAME,
-          username: response.message.USERNAME,
-        });
-        
-        // Invalidate any related queries
-        queryClient.invalidateQueries({ queryKey: ['profile'] });
-      }
-    },
-    onError: (error: any) => {
-      setError(error.response?.data?.message || 'Something went wrong');
-    },
-    onSettled: () => {
-      setLoading(false);
+    mutationFn: updateProfile, // your axios call
+    onSuccess: () => {
+      // 🔥 Forces the profile screen to refetch
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 };

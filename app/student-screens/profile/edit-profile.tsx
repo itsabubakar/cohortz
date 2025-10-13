@@ -5,173 +5,232 @@ import {
   Text,
   View,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Back, Camera } from '@/assets/icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { DropdownInput, Input, TextArea } from '@/components/Form';
+import { router, useRouter } from 'expo-router';
+import { Input, TextArea } from '@/components/Form';
 import * as ImagePicker from 'expo-image-picker';
+import { updateProfile } from '@/api/profile';
+import { useProfile, useUpdateProfile } from '@/hooks/api/useProfileHook';
 
 type Props = {};
 
 const EditProfile = (props: Props) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [location, setLocation] = useState('');
+  const [socials, setSocials] = useState('');
+  const [bio, setBio] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const { mutateAsync: updateProfile } = useUpdateProfile();
+  const router = useRouter();
+  const {data: profileData} = useProfile();
 
-  const pickImage = async () => {
-    // Request permissions
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+  console.log('Profile Data:', profileData);
+  // Check if there are any changes
+  useEffect(() => {
+    const changes = 
+      firstName !== '' || 
+      lastName !== '' || 
+      location !== '' || 
+      socials !== '' || 
+      bio !== '' || 
+      profileImage !== null;
+    
+    setHasChanges(changes);
+  }, [firstName, lastName, location, socials, bio, profileImage]);
+
+  const handleSave = async () => {
+    if (!hasChanges) {
+      Alert.alert('No Changes', 'No changes to save.');
       return;
     }
 
-    // Launch image picker
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+    try {
+      setIsSaving(true);
+      
+      const updateData: any = {
+        first_name: firstName,
+        last_name: lastName,
+        location: location,
+        socials: socials,
+      };
 
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      // Handle image upload if an image was selected
+      if (profileImage) {
+        // Extract filename from URI
+        const filename = profileImage.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename || '');
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+        
+        updateData.image = {
+          uri: profileImage,
+          type: type,
+          name: filename || 'profile.jpg',
+        };
+      }
+
+      await updateProfile(updateData);
+      Alert.alert('Success', 'Profile updated successfully.');
+      router.back();
+    } catch (err: any) {
+      console.error('Update error:', err);
+      Alert.alert(
+        'Error', 
+        err?.response?.data?.message || err?.message || 'Update failed. Please try again.'
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const pickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'We need access to your photos.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8, // Reduced quality for faster uploads
+      });
+
+      if (!result.canceled) {
+        setProfileImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Image picker error:', error);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const handleCancel = () => {
+    if (hasChanges) {
+      Alert.alert(
+        'Unsaved Changes',
+        'You have unsaved changes. Are you sure you want to leave?',
+        [
+          { text: 'Stay', style: 'cancel' },
+          { text: 'Leave', onPress: () => router.back() }
+        ]
+      );
+    } else {
+      router.back();
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 16,
-            paddingVertical: 16,
-            borderBottomWidth: 1,
-            borderColor: '#ECDCFF',
-            paddingHorizontal: 16,
-          }}
-        >
-          <Pressable onPress={() => router.back()}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable onPress={handleCancel} disabled={isSaving}>
             <Back />
           </Pressable>
-          <Text>Edit Profile</Text>
+          <Text style={styles.headerTitle}>Edit Profile</Text>
         </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 26,
-          }}
-        >
-          {/* Container for the image and camera badge */}
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 26,
-            }}
-          >
-            <View style={{ position: 'relative' }}>
-              {/* Profile image - now shows either the selected image or the placeholder */}
-              {profileImage ? (
-                <Image
-                  source={{ uri: profileImage }}
-                  style={[
-                    styles.profileImage,
-                    { backgroundColor: 'transparent' },
-                  ]}
-                />
-              ) : (
-                <View style={styles.profileImage} />
-              )}
 
-              {/* Camera badge */}
-              <Pressable
-                onPress={pickImage}
-                style={{
-                  position: 'absolute',
-                  bottom: -4,
-                  right: -4,
-                  height: 32,
-                  width: 32,
-                  backgroundColor: '#ECDCFF',
-                  borderRadius: 999,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  elevation: 2,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 2,
-                }}
-              >
-                <Camera />
-              </Pressable>
-            </View>
+        {/* Profile Image */}
+        <View style={styles.imageContainer}>
+          <View style={{ position: 'relative' }}>
+            {profileImage ? (
+              <Image
+                source={{ uri: profileImage }}
+                style={[styles.profileImage, { backgroundColor: 'transparent' }]}
+              />
+            ) : (
+              <View style={styles.profileImage} />
+            )}
+
+            <Pressable
+              onPress={pickImage}
+              style={styles.cameraBadge}
+              disabled={isSaving}
+            >
+              <Camera />
+            </Pressable>
           </View>
         </View>
-        <View style={{ gap: 8, paddingHorizontal: 16, marginTop: 24 }}>
-          <Input label="Full Name" placeholder="Full name" />
-          <TextArea label="Bio" />
 
-          <Input label="X URL" placeholder="X URL" />
-
-          <Input label="Facebook URL" placeholder="Facebook URL" />
-
-          <Input label="Instagram URL" placeholder="Instagram URL" />
-
-          <Input label="LinkedIn URL" placeholder="LinkedIn URL" />
+        {/* Form */}
+        <View style={styles.formContainer}>
+          <Input
+            value={firstName}
+            onChangeText={setFirstName}
+            label="First Name"
+            placeholder={profileData.first_name}
+            editable={!isSaving}
+          />
+          <Input
+            value={lastName}
+            onChangeText={setLastName}
+            label="Last Name"
+            placeholder={profileData.last_name}
+            editable={!isSaving}
+          />
+          <TextArea
+            label="Bio"
+            value={bio}
+            onChangeText={setBio}
+            placeholder="Tell us about yourself"
+            editable={!isSaving}
+          />
+          <Input
+            value={location}
+            onChangeText={setLocation}
+            label="Location"
+            placeholder={profileData.location || 'Enter your location'}
+            editable={!isSaving}
+          />
+          <Input
+            value={socials}
+            onChangeText={setSocials}
+            label="Social Link"
+            placeholder={profileData.socials || 'Enter your social link'}
+            editable={!isSaving}
+          />
         </View>
-        <View
-          style={{
-            paddingHorizontal: 16,
-            marginTop: 24,
-            flexDirection: 'row',
-            gap: 16,
-          }}
-        >
+
+        {/* Buttons */}
+        <View style={styles.buttonContainer}>
           <Pressable
-            style={{
-              backgroundColor: 'white',
-              padding: 6,
-              borderRadius: 500,
-              flex: 1,
-              borderWidth: 1,
-              borderColor: '#F8F1FF',
-            }}
+            onPress={handleCancel}
+            style={[styles.cancelBtn, isSaving && styles.buttonDisabled]}
+            disabled={isSaving}
           >
-            <Text
-              style={{
-                color: '#391D65',
-                textAlign: 'center',
-              }}
-            >
-              Cancel
-            </Text>
+            <Text style={styles.cancelText}>Cancel</Text>
           </Pressable>
+
           <Pressable
-            style={{
-              backgroundColor: '#391D65',
-              padding: 6,
-              borderRadius: 500,
-              flex: 1,
-            }}
+            onPress={handleSave}
+            disabled={isSaving || !hasChanges}
+            style={[
+              styles.saveBtn,
+              (isSaving || !hasChanges) && styles.saveBtnDisabled,
+            ]}
           >
-            <Text
-              style={{
-                color: 'white',
-                textAlign: 'center',
-              }}
-            >
-              Save changes
-            </Text>
+            {isSaving ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text style={styles.saveText}>Save Changes</Text>
+            )}
           </Pressable>
         </View>
-        <Text style={{ marginTop: 24, textAlign: 'center', color: '#1F1F1F' }}>
-          You have unsaved changes.
-        </Text>
+
+        {/* Changes Indicator */}
+        {hasChanges && !isSaving && (
+          <Text style={styles.changesText}>You have unsaved changes.</Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -180,13 +239,93 @@ const EditProfile = (props: Props) => {
 export default EditProfile;
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderColor: '#ECDCFF',
+    paddingHorizontal: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F1F1F',
+  },
+  imageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 26,
+  },
   profileImage: {
     height: 152,
     width: 152,
     backgroundColor: '#F2750D',
     borderRadius: 8,
   },
-  contentContainer: {
+  cameraBadge: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    height: 32,
+    width: 32,
+    backgroundColor: '#ECDCFF',
+    borderRadius: 999,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  formContainer: {
+    gap: 12,
+    paddingHorizontal: 16,
+    marginTop: 24,
+  },
+  buttonContainer: {
+    paddingHorizontal: 16,
+    marginTop: 24,
+    flexDirection: 'row',
+    gap: 16,
+  },
+  cancelBtn: {
+    backgroundColor: 'white',
     padding: 16,
+    borderRadius: 500,
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#F8F1FF',
+    alignItems: 'center',
+  },
+  cancelText: {
+    color: '#391D65',
+    fontWeight: '600',
+  },
+  saveBtn: {
+    backgroundColor: '#391D65',
+    padding: 16,
+    borderRadius: 500,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveBtnDisabled: {
+    backgroundColor: '#CCCCCC',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  saveText: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  changesText: {
+    marginTop: 24,
+    textAlign: 'center',
+    color: '#1F1F1F',
+    fontSize: 14,
   },
 });
