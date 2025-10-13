@@ -6,6 +6,7 @@ import { Button } from '@/components/ui';
 import { router, useLocalSearchParams, useRouter } from 'expo-router';
 import Lottie from 'lottie-react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {};
 const { width } = Dimensions.get('window');
@@ -38,6 +39,8 @@ const CheckEmail = (props: Props) => {
           params: {token: response.data.token}
         });
         console.log("verified!")
+        await AsyncStorage.setItem("authToken", response.data.token)
+        console.log("saved")
       }
       else (
         setError("Couldn't verify token. Contact the developers")

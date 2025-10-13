@@ -9,16 +9,27 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Add token interceptor
+// Token Interceptor (keeps working the same)
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const authToken = await AsyncStorage.getItem('authToken');
+  const initialToken = await AsyncStorage.getItem('initialToken');
+  let tokenToUse = authToken || initialToken;
+
+  if (config.headers?._useInitialToken) {
+    tokenToUse = initialToken;
+    delete config.headers._useInitialToken;
+  } else if (config.headers?._useAuthToken) {
+    tokenToUse = authToken;
+    delete config.headers._useAuthToken;
   }
+
+  if (tokenToUse) {
+    config.headers.Authorization = `Bearer ${tokenToUse}`;
+  }
+  console.log(tokenToUse === initialToken)
+
   return config;
 });
-
-
 
 export interface UpdateProfileResponse {
   error: boolean;
@@ -32,10 +43,13 @@ export interface UpdateProfileResponse {
   };
 }
 
-export const updateProfile = async (data: ProfileProp): Promise<UpdateProfileResponse> => {
+// ✅ Modified function to accept tokenType
+export const updateProfile = async (
+  data: ProfileProp,
+  tokenType: 'authToken' | 'initialToken' = 'authToken'
+): Promise<UpdateProfileResponse> => {
   const formData = new FormData();
-  
-  // Append text fields
+
   if (data.first_name) formData.append('first_name', data.first_name);
   if (data.last_name) formData.append('last_name', data.last_name);
   if (data.username) formData.append('username', data.username);
@@ -43,7 +57,6 @@ export const updateProfile = async (data: ProfileProp): Promise<UpdateProfileRes
   if (data.location) formData.append('location', data.location);
   if (data.socials) formData.append('socials', data.socials);
   
-  // Append image if provided
   if (data.image) {
     formData.append('image', {
       uri: data.image.uri,
@@ -52,11 +65,11 @@ export const updateProfile = async (data: ProfileProp): Promise<UpdateProfileRes
     } as any);
   }
 
-  const response = await api.put('/v1/api/profile', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  
+  // ✅ Use the header flag to tell the interceptor which token to use
+  const headers: any = { 'Content-Type': 'multipart/form-data' };
+  if (tokenType === 'initialToken') headers._useInitialToken = true;
+  else headers._useAuthToken = true;
+
+  const response = await api.put('/v1/api/profile', formData, { headers });
   return response.data;
 };

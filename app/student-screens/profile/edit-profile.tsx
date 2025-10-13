@@ -28,7 +28,7 @@ const EditProfile = (props: Props) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const { mutateAsync: updateProfile } = useUpdateProfile();
+  const updateProfileMutation = useUpdateProfile();
   const router = useRouter();
   const {data: profileData} = useProfile();
 
@@ -47,47 +47,18 @@ const EditProfile = (props: Props) => {
   }, [firstName, lastName, location, socials, bio, profileImage]);
 
   const handleSave = async () => {
-    if (!hasChanges) {
-      Alert.alert('No Changes', 'No changes to save.');
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      
-      const updateData: any = {
-        first_name: firstName,
-        last_name: lastName,
-        location: location,
-        socials: socials,
-      };
-
-      // Handle image upload if an image was selected
-      if (profileImage) {
-        // Extract filename from URI
-        const filename = profileImage.split('/').pop();
-        const match = /\.(\w+)$/.exec(filename || '');
-        const type = match ? `image/${match[1]}` : 'image/jpeg';
-        
-        updateData.image = {
-          uri: profileImage,
-          type: type,
-          name: filename || 'profile.jpg',
-        };
+    updateProfileMutation.mutate(
+      { data: { first_name: firstName, location, socials } },
+      {
+        onSuccess: () => {
+          Alert.alert('Success', 'Profile updated!');
+          // ✅ React Query will auto-refetch `useProfile`
+        },
+        onError: (error) => {
+          Alert.alert('Error', error.message);
+        },
       }
-
-      await updateProfile(updateData);
-      Alert.alert('Success', 'Profile updated successfully.');
-      router.back();
-    } catch (err: any) {
-      console.error('Update error:', err);
-      Alert.alert(
-        'Error', 
-        err?.response?.data?.message || err?.message || 'Update failed. Please try again.'
-      );
-    } finally {
-      setIsSaving(false);
-    }
+    );
   };
 
   const pickImage = async () => {

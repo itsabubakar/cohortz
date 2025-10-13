@@ -12,4 +12,4 @@ export const getProfile = async () => {
     })
     console.log(response)
     return response.data.message 
-}
+} 
