@@ -1,80 +1,118 @@
-import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaWrapper } from '@/HOC';
-import { DropdownInput, Input } from '@/components/Form';
 import { Header } from '@/ui';
 import { Text } from '@/theme/theme';
 import { BackArrowIcon } from '@/assets/icons';
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import { colors } from '@/utils/color';
+import { useUpdateCohort } from '@/api/updateCohorts';
 
 const Structure = () => {
-    const [selected, setSelected] = useState<number | null>(null)
+  const [selected, setSelected] = useState<string | null>(null);
+  const {cohort_id, token} = useLocalSearchParams<{cohort_id: string, token: string}>();
+  const updateCohort = useUpdateCohort();
+  const router = useRouter();
 
-    const handleSelected = (n: number) => {
-        setSelected(0)
-        setSelected(prevSelected => prevSelected === n ? null : n)
-    }
+  const handleSelected = (value: string) => {
+    setSelected(prev => (prev === value ? null : value));
+  };
+
+    const handleSave = async () => {
+  
+      try {
+        await updateCohort.mutateAsync({
+          cohort_id: Number(cohort_id),
+          token: String(token),
+          data: {
+            community_structure: selected ?? undefined, // will be set on next screen
+          },
+        });
+  console.log("Saved community structure:", selected);
+        Alert.alert('Success', 'Cohort info updated successfully');
+        // ✅ Navigate to next step
+        router.push(`/convener-screens/community`);
+      } catch (err: any) {
+        Alert.alert('Error', err?.response?.data?.message || 'Update failed');
+      }
+    };
+
   return (
     <SafeAreaWrapper>
-        <View style={{ marginTop: 24 }}>
-            <Header number={4} />
-            <View>
-            <Text
-                style={{
-                textAlign: 'center',
-                fontSize: 18,
-                fontFamily: 'DMSansMedium',
-                marginBottom: 8,
-                color: '#B085EF',
-                }}
-            >
-                Pick your community structure
-            </Text>
+      <View style={{ marginTop: 24 }}>
+        <Header number={4} />
+
+        <View>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 18,
+              fontFamily: 'DMSansMedium',
+              marginBottom: 8,
+              color: '#B085EF',
+            }}
+          >
+            Pick your community structure
+          </Text>
         </View>
-        <View style={{ gap: 24 }}>
-            <TouchableOpacity
-            onPress={() => { handleSelected(1)}}
-                style={[selected === 1 ? {backgroundColor: "red"} : {backgroundColor: ""} , { width: 152, height: 48, borderWidth: 1, borderColor: "#F8F1FF", borderRadius: 50, justifyContent:"center", alignItems:"center"}]}>
-                <Text style={{fontWeight: 700, fontSize: 16}} >Hello</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-            onPress={() => { handleSelected(2)}}
-             
-             style={[selected === 2 ? {backgroundColor: "red"} : {backgroundColor: ""} , { width: 152, height: 48, borderWidth: 1, borderColor: "#F8F1FF", borderRadius: 50, justifyContent:"center", alignItems:"center"}]}>
-                <Text style={{fontWeight: 700, fontSize: 16}} >Hello</Text>
-            </TouchableOpacity>
-          {/* <Input label="Community URL" placeholder="muhammads-community" /> */}
+
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity
+            onPress={() => handleSelected('course')}
+            style={[
+              styles.optionButton,
+              selected === 'course' && styles.optionSelected,
+            ]}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                selected === 'course' && { color: '#fff' },
+              ]}
+            >
+              Course
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => handleSelected('basic')}
+            style={[
+              styles.optionButton,
+              selected === 'basic' && styles.optionSelected,
+            ]}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                selected === 'basic' && { color: '#fff' },
+              ]}
+            >
+              Basic
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       <Link asChild href="/convener-screens">
         <Pressable
-          style={{
-            borderWidth: 1,
-            borderColor: '#F8F1FF',
-            paddingVertical: 14,
-            alignItems: 'center',
-            borderRadius: 32,
-            marginTop: 48,
-            backgroundColor: '#391D65',
-          }}
+          style={[
+            styles.nextButton,
+            { backgroundColor: selected ? '#391D65' : '#A59FB2' },
+          ]}
+          disabled={!selected}
         >
           <Text style={{ color: '#fff' }}>next</Text>
         </Pressable>
       </Link>
-      <Pressable
-        style={{
-          paddingVertical: 14,
-          alignItems: 'center',
-          marginTop: 32,
-          flexDirection: 'row',
-          gap: 8,
-          justifyContent: 'center',
-        }}
-      >
-        <BackArrowIcon />
-        <Text style={{ color: '#391D65' }}>Back</Text>
-      </Pressable>
+      <View style={{marginTop: "auto", marginBottom: 20, flexDirection: 'row', justifyContent: "flex-end", gap: 16 }}>
+        
+        <Pressable style={styles.backButton}>
+          <Text style={{ color: '#391D65' }}>Skip</Text>
+        </Pressable>
+        <Pressable onPress={handleSave} style={styles.backButton}>
+          <Text style={{ color: '#391D65' }}>Next</Text>
+        </Pressable>
+      </View>
     </SafeAreaWrapper>
   );
 };
@@ -82,11 +120,48 @@ const Structure = () => {
 export default Structure;
 
 const styles = StyleSheet.create({
-  
-  label: {
-    fontSize: 14,
-    fontWeight: 700,
+  optionsContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
+    marginTop: 24,
+  },
+  optionButton: {
+    width: 150,
+    height: 52,
+    borderWidth: 1,
+    borderColor: '#F8F1FF',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  optionSelected: {
+    backgroundColor: '#391D65',
+  },
+  optionText: {
+    fontWeight: '700',
+    fontSize: 16,
     color: '#391D65',
-    marginBottom: 8,
-  }
+  },
+  nextButton: {
+    borderWidth: 1,
+    borderColor: '#F8F1FF',
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderRadius: 32,
+    marginTop: 48,
+  },
+  backButton: {
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 32,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    borderWidth:1,
+    borderRadius:8,
+    borderColor: colors.purpleShade
+  },
 });

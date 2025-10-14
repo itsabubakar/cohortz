@@ -1,28 +1,49 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import React from 'react';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
 import { SafeAreaWrapper } from '@/HOC';
 import { Input } from '@/components/Form';
 import { Header } from '@/ui';
 import { Text } from '@/theme/theme';
 import { BackArrowIcon } from '@/assets/icons';
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
 
 const CommunityInfo = () => {
-
+  const [data, setData] = useState({
+    name: "",
+    url: ""
+  })
+  const { token } = useLocalSearchParams<{ token: string }>()
+  const router = useRouter()
   const apiURL = process.env.EXPO_PUBLIC_API_URL;
-  // const handleComunityCreate = async () => {
-  //   // Handle community creation logic here
-  //   try {
-  //     const response = await axios.post(`${apiURL}/v1/api/auth/login`, {
-  //       email,
-  //       password,
-  //     });
-  //   }
-  //   catch (error) {
-  //     console.error('Error during login:', error);
-  //   }
-  // }
+  const handleComunityCreate = async () => {
+  console.log("New: ", token)
+    if (!token) {
+      Alert.alert('Authentication Error', 'No auth token found. Please log in again.');
+    }
+    // Handle community creation logic here
+    try {
+      const response = await axios.post(`${apiURL}/v1/api/cohorts`, {
+        name: data.name,
+        url: data.url
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+    }
+    );
+    console.log(response.data)
+      router.navigate({
+        pathname: '/(auth)/(convener)/more-info',
+        params: {cohort_id: response.data.cohort_id, token}
+      })
+      return response.data
+    }
+    catch (error) {
+      console.error('Error during login:', error);
+    }
+  }
   return (
     <SafeAreaWrapper>
       <View style={{ marginTop: 24 }}>
@@ -52,9 +73,9 @@ const CommunityInfo = () => {
           </Text>
         </View>
         <View style={{ gap: 24 }}>
-          <Input label="Name your cohort" placeholder="Muhammad's Community" />
+          <Input value={data.name} onChangeText={(name: string) => setData(prev => ({ ...prev, name }))} label="Name your cohort" placeholder="Muhammad's Community" />
           <View>
-            <Input label="Community URL" placeholder="muhammads-community" />
+            <Input value={data.url} onChangeText={(url: string) => setData(prev => ({ ...prev, url }))} label="Community URL" placeholder="muhammads-community" />
             <Text style={{ fontSize: 12, color: '#999', paddingTop: 8 }}>
               We'll and the "/cohortz.com"
             </Text>
@@ -62,8 +83,9 @@ const CommunityInfo = () => {
         </View>
       </View>
 
-      <Link asChild href="/more-info">
+      <Link asChild href="/(auth)/(convener)/community-info">
         <Pressable
+      onPress={handleComunityCreate}
           style={{
             borderWidth: 1,
             borderColor: '#F8F1FF',
