@@ -35,8 +35,7 @@ const Community = () => {
         } else {
           console.warn("Unexpected posts response:", response.data);
           setPosts([]); // fallback
-        }
-      console.log(response.data.posts)
+        } 
       return response.data.posts
       
   };
@@ -50,7 +49,7 @@ const Community = () => {
         <Link href="/(auth)/login" style={{ color: '#B085EF', fontSize: 18, fontWeight: '600' }}>
           Cohortle
         </Link>
-        <Link href={"/student-screens/community/upload"} style={{ position: 'absolute', right: 0, top: 0, padding: 8, borderRadius: 8, backgroundColor: '#E9D7FE' }}>
+        <Link href={"/convener-screens/(cohorts)/upload"} style={{ position: 'absolute', right: 0, top: 0, padding: 8, borderRadius: 8, backgroundColor: '#E9D7FE' }}>
           <Text style={{fontWeight: 700}}>Create Post</Text>
         </Link>
       </View>
