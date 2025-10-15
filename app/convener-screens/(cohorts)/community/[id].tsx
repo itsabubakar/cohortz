@@ -17,6 +17,7 @@ import { X } from "lucide-react-native";
 import { combine } from 'zustand/middleware';
 import { usePostCommunity } from '@/api/communities/postCommunity';
 import { CommunityType } from '@/api/communities/postCommunity';
+import useGetCommunities from '@/api/communities/getCommunities';
 
   interface CreateCommunityHandlerOptions {
     onSuccess?: (data: any) => void;
@@ -83,12 +84,17 @@ const Index = (props: Props) => {
   const [communityAccess, setCommunityAccess] = useState(false);
   const { id } = useLocalSearchParams<{ id: string }>();
   const numericId = Number(id);
-  console.log(numericId);
 
-  const { mutate: createCommunity, isLoading: creatingCommunity } = usePostCommunity(numericId)
+  const apiURL = process.env.EXPO_PUBLIC_API_URL as string
+
+  console.log(apiURL);
+  const { mutate: createCommunity} = usePostCommunity(numericId)
+  const { data: communities = [] } = useGetCommunities(numericId)
   const handleStep = () => {
     setStep(step + 1)
   }
+
+  console.log(numericId)
 
   const createCommunityHandler = () => {
     // Validate required fields
@@ -170,13 +176,14 @@ const Index = (props: Props) => {
           </TouchableOpacity>
         </View>
       </View>
-      {lessons.length > 0 ? (
+      {communities.length > 0 ? (
         <ScrollView
           contentContainerStyle={{ paddingVertical: 16, gap: 16 }}
           showsVerticalScrollIndicator={false}
         >
-          {lessons.map((lesson, index) => (
-            <Lesson onOpenBottomSheet={openBottomSheet} key={index} />
+          {communities.map((community:CommunityType) => (
+            <Lesson
+             {...community} onOpenBottomSheet={openBottomSheet}/>
           ))}
           <TouchableOpacity
             style={{
@@ -451,12 +458,14 @@ const Index = (props: Props) => {
 
 export default Index;
 
-const Lesson = ({ onOpenBottomSheet }: { onOpenBottomSheet: () => void }) => {
+
+type LessonProps = CommunityType & { onOpenBottomSheet: () => void };
+
+const Lesson = ({ id, cohort_id, name, onOpenBottomSheet }: LessonProps) => {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  console.log(id);
   return (
     <TouchableOpacity
+    key={id}
       onPress={() => router.push('/convener-screens/community/dashboard')}
       style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}
     >
@@ -465,7 +474,7 @@ const Lesson = ({ onOpenBottomSheet }: { onOpenBottomSheet: () => void }) => {
         <Text
           style={{ fontFamily: 'DMSansMedium', fontSize: 12, color: '#1F1F1F' }}
         >
-          {id}
+          {name}
         </Text>
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
           <Text

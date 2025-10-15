@@ -35,7 +35,7 @@ const Cohorts = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleCohortPress = (id: string) => {
+  const handleCohortPress = (id: number) => {
     router.navigate({
       pathname: `/convener-screens/(cohorts)/community/[id]`,
       params: { id },
@@ -98,7 +98,7 @@ const Cohorts = () => {
         <View style={{ gap: 15 }}>
           {cohorts.map((cohort: any) => (
             
-          <Cohort name={cohort.name} onPress={() => {handleCohortPress(cohort.id)}} onOpenBottomSheet={openBottomSheet} />
+          <Cohort key={cohort.id} name={cohort.name} onPress={() => {handleCohortPress(cohort.id)}} onOpenBottomSheet={openBottomSheet} />
           ))}
         </View>
       )}
