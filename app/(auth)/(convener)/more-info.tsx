@@ -74,30 +74,24 @@ const ModalDropdown = ({
 };
 
 const MoreInfo = () => {
-  const [ownerType, setOwnerType] = useState('');
+  const [description, setDescription] = useState('');
   const [goal, setGoal] = useState('');
-  const [reference, setReference] = useState('');
+  const [referral, setReferral] = useState('');
 
   const updateCohort = useUpdateCohort();
   const router = useRouter();
   const { cohort_id, token } = useLocalSearchParams()
 
   const handleNext = async () => {
-    if (!ownerType || !goal || !reference) {
-      Alert.alert('Please select all fields');
-      return;
-    }
-
     try {
       await updateCohort.mutateAsync({
         cohort_id: Number(cohort_id),
         token: String(token),
         data: {
-          name: '', // optional, can be omitted
+          description,
           goal,
-          reference,
+          referral,
           revenue: '', // optional
-          community_structure: '', // will be set on next screen
         },
       });
 
@@ -130,8 +124,8 @@ const MoreInfo = () => {
               'I work for a membership-based business, organisation, or club',
               'Other',
             ]}
-            selected={ownerType}
-            onSelect={setOwnerType}
+            selected={description}
+            onSelect={setDescription}
           />
 
           <ModalDropdown
@@ -155,8 +149,8 @@ const MoreInfo = () => {
               'Advertisement',
               'Other',
             ]}
-            selected={reference}
-            onSelect={setReference}
+            selected={referral}
+            onSelect={setReferral}
           />
         </View>
       </View>

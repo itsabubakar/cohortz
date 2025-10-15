@@ -8,15 +8,17 @@ import { BackArrowIcon } from '@/assets/icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
 
+interface FormData {
+  name: string;
+  url: string;
+}
 const CommunityInfo = () => {
-  const [data, setData] = useState({
-    name: "",
-    url: ""
-  })
+  const [data, setData] = useState<FormData>({name: "", url: ""})
   const { token } = useLocalSearchParams<{ token: string }>()
   const router = useRouter()
   const apiURL = process.env.EXPO_PUBLIC_API_URL;
-  const handleComunityCreate = async () => {
+  
+  const handleCohortCreate = async () => {
   console.log("New: ", token)
     if (!token) {
       Alert.alert('Authentication Error', 'No auth token found. Please log in again.');
@@ -44,6 +46,9 @@ const CommunityInfo = () => {
       console.error('Error during login:', error);
     }
   }
+  const handleUpdate = (field: keyof FormData, value: string) => {
+    setData(prev => ({ ...prev, [field]: value }));
+  };
   return (
     <SafeAreaWrapper>
       <View style={{ marginTop: 24 }}>
@@ -73,9 +78,9 @@ const CommunityInfo = () => {
           </Text>
         </View>
         <View style={{ gap: 24 }}>
-          <Input value={data.name} onChangeText={(name: string) => setData(prev => ({ ...prev, name }))} label="Name your cohort" placeholder="Muhammad's Community" />
+          <Input value={data.name} onChangeText={(value: string) => handleUpdate("name", value)} label="Name your cohort" placeholder="Muhammad's Community" />
           <View>
-            <Input value={data.url} onChangeText={(url: string) => setData(prev => ({ ...prev, url }))} label="Community URL" placeholder="muhammads-community" />
+            <Input value={data.url} onChangeText={(value: string) => handleUpdate("url", value)} label="Community URL" placeholder="muhammads-community" />
             <Text style={{ fontSize: 12, color: '#999', paddingTop: 8 }}>
               We'll and the "/cohortz.com"
             </Text>
@@ -85,7 +90,7 @@ const CommunityInfo = () => {
 
       <Link asChild href="/(auth)/(convener)/community-info">
         <Pressable
-      onPress={handleComunityCreate}
+      onPress={handleCohortCreate}
           style={{
             borderWidth: 1,
             borderColor: '#F8F1FF',

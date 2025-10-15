@@ -9,7 +9,7 @@ interface UpdateCohortParams {
     description?: string;
     goal?: string;
     revenue?: string;
-    reference?: string;
+    referral?: string;
     community_structure?: string;
   };
   token: string;
