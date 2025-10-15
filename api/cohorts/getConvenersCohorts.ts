@@ -25,6 +25,8 @@ export const useConvenersCohorts = () => {
   return useQuery({
     queryKey: ['convenersCohorts'],
     queryFn: convenersCohorts,
-    staleTime: 5 * 60 * 1000,
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: true,
+    staleTime: 0
   });
 }
