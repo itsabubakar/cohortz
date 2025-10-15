@@ -5,6 +5,7 @@ import axios from "axios";
 const apiURL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CommunityType {
+    id?: string;
     cohort_id?: number;
     name: string;
     description: string;
