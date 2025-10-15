@@ -38,7 +38,6 @@ const UploadPost = () => {
     toggleReplyModal();
   };
    const handleUpload = async () => {
-    const token = await AsyncStorage.getItem('authToken');
     if (!text.trim()) {
       Alert.alert("Empty Post", "Please enter something to post.");
       return;
