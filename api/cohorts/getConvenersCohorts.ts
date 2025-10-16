@@ -10,6 +10,8 @@ const convenersCohorts = async () => {
     const response = await axios.get(`${apiURL}/v1/api/cohorts/owner`, {
       headers: {
         Authorization: `Bearer ${token}`,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
       },
     });
     console.log("Fetched convener's cohorts:", response.data.cohorts);  
@@ -25,8 +27,9 @@ export const useConvenersCohorts = () => {
   return useQuery({
     queryKey: ['convenersCohorts'],
     queryFn: convenersCohorts,
+    // ensure the data stays up todaate
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
-    staleTime: 0
+    staleTime: 0,
   });
-}
+} 
