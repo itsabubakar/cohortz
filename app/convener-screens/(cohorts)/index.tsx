@@ -12,23 +12,62 @@ import BottomSheet, {
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import { RelativePathString, useRouter } from 'expo-router';
 import { useConvenersCohorts } from '@/api/cohorts/getConvenersCohorts';
+import { useCreateCohort } from '@/api/cohorts/postCohort';
+import { CohortType } from '@/types/cohortType';
 
 const Cohorts = () => {
+  const [cohortData, setCohortData] = useState({
+    name: "",
+    description: ""
+  })
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
   /// Note: Instead of calling the communities withing a cohort, its the cohort that is being called in this case. a major oversight
-    const { data: cohorts = [], isLoading, isError } = useConvenersCohorts();
+  const { data: cohorts = [], isLoading, isError } = useConvenersCohorts();
+  const { mutate: createCohort } = useCreateCohort()
   
 
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const [selectedCohort, setSelectedCohort] = useState<any>(null);
   const handleSheetChanges = useCallback((index: number) => {
     // Update state based on the index value
     console.log(index);
     // If index is greater than -1, sheet is active
   }, []);
 
-  const openBottomSheet = () => {
+    const handleCreateCohort = () => {
+      if (!cohortData.name.trim() || !cohortData.description.trim()) {
+        alert("Please fill in the field")
+        return
+      }
+      const payload: CohortType = {
+          name: cohortData.name,
+          description: cohortData.description
+      }
+  
+      createCohort(payload, {
+          onSuccess: (data:any) => {
+            setCohortData({
+              name: "",
+              description: ""
+            })
+            alert("Success!")
+          },
+          onError: (error: any) => {
+            console.log("Not working")
+          }
+      })
+    }
+    const updateCohortData = (field: string, value: string) => {
+      setCohortData(prev => ({...prev, [field]: value}));
+    };
+  const openBottomSheet = (id: number) => {
+    const cohort = cohorts.find((cohort: CohortProps) => cohort.id === id);
+    setSelectedCohort(cohort);
+    // You can set the selected cohort to state if needed
+    console.log('Opening bottom sheet for cohort ID:', cohort);
     bottomSheetRef.current?.expand();
+
   };
 
   const toggleModal = () => {
@@ -55,7 +94,7 @@ const Cohorts = () => {
           <Text style={{ color: '#B085EF', fontFamily: 'DMSansSemiBold' }}>
             Cohortle
           </Text>
-          <Pressable>
+          <Pressable onPress={toggleModal}>
             <Plus />
           </Pressable>
         </View>
@@ -98,7 +137,7 @@ const Cohorts = () => {
         <View style={{ gap: 15 }}>
           {cohorts.map((cohort: any) => (
             
-          <Cohort key={cohort.id} name={cohort.name} onPress={() => {handleCohortPress(cohort.id)}} onOpenBottomSheet={openBottomSheet} />
+          <Cohort key={cohort.id} name={cohort.name} onPress={() => {handleCohortPress(cohort.id)}} onOpenBottomSheet={() => openBottomSheet(cohort.id)} />
           ))}
         </View>
       )}
@@ -125,12 +164,18 @@ const Cohorts = () => {
           >
             Create Cohort
           </Text>
-          <View style={{ gap: 16, marginTop: 26 }}>
-            <Input label="Cohort Name" placeholder="Cohort title" />
-            <Input
-              label="Cohort Description"
-              placeholder="Describe what your cohort is about..."
-            />
+          <View style={{ gap: 16, marginTop: 26 }}><Input 
+  value={cohortData.name} 
+  onChangeText={(text: string) => updateCohortData('name', text)} 
+  label="Cohort Name" 
+  placeholder="Cohort title" 
+/>
+<Input 
+  value={cohortData.description} 
+  onChangeText={(text: string) => updateCohortData('description', text)} 
+  label="Description" 
+  placeholder="Cohort description" 
+/>
             <Input label="Community Name" placeholder="Cohort title" />
           </View>
           <View style={{ alignItems: 'center' }}>
@@ -145,12 +190,14 @@ const Cohorts = () => {
                 backgroundColor: '#391D65',
                 width: '70%',
               }}
+              onPress={handleCreateCohort}
             >
               <Text style={{ color: '#fff' }}>Create</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
+      
       <BottomSheet
         ref={bottomSheetRef}
         index={0} // Start fully collapsed
@@ -168,7 +215,7 @@ const Cohorts = () => {
             }}
           >
             <TouchableOpacity
-              onPress={() => router.push('/convener-screens/edit-cohort')}
+              // onPress={() => router.push('/convener-screens/edit-cohort')}
             >
               <Text>See learners</Text>
             </TouchableOpacity>
@@ -176,9 +223,12 @@ const Cohorts = () => {
               <Text>Add learners (copy link)</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push('/convener-screens/edit-cohort')}
+              onPress={() => router.navigate({
+                pathname: `/convener-screens/(cohorts)/edit-profile/[id]`,
+                params: { id: selectedCohort?.id },
+              })}
             >
-              <Text>Edit community</Text>
+              <Text>Edit community {selectedCohort?.name} </Text>
             </TouchableOpacity>
           </View>
         </BottomSheetView>
@@ -190,6 +240,7 @@ const Cohorts = () => {
 export default Cohorts;
 
 interface CohortProps {
+  id?: number;
   name: string;
   onOpenBottomSheet: () => void;
   onPress: () => void;

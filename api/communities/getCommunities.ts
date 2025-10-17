@@ -22,7 +22,7 @@ const getCommunities = async (cohortId: number) => {
 }
 
 const useGetCommunities = (cohortId: number) => {
-    return useQuery({ // Add 'return' here
+    return useQuery({
         queryKey: ['communities', cohortId],
         queryFn: () => getCommunities(cohortId),
         refetchOnReconnect: true,

@@ -7,7 +7,7 @@ import BottomSheet, {
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
-import { Picker } from '@react-native-picker/picker';
+
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, TextInput, TouchableOpacity } from 'react-native';
@@ -94,7 +94,7 @@ const Index = (props: Props) => {
     setStep(step + 1)
   }
 
-  console.log(numericId)
+  console.log("Sol", communities)
 
   const createCommunityHandler = () => {
     // Validate required fields
@@ -132,7 +132,10 @@ const Index = (props: Props) => {
           alert(`Error: ${errorMessage}`);
       }
     });
-}
+  }
+
+
+
   const handleSheetChanges = useCallback((index: number) => {
   // Update state based on the index value
   console.log(index);
@@ -325,7 +328,7 @@ const Index = (props: Props) => {
                   multiline
                 />
 
-                {/* Cohort group */}
+                {/* Cohort group
                 <Text style={styles.label}>Cohort group</Text>
                 <View style={styles.pickerWrapper}>
                   <Picker
@@ -339,7 +342,7 @@ const Index = (props: Props) => {
                     <Picker.Item label="Other cohort" value="Other cohort2" />
                     <Picker.Item label="Other cohort" value="Other cohort3" />
                   </Picker>
-                </View>
+                </View> */}
 
                 {/* Community Access */}
                 <View style={styles.switchRow}>
@@ -432,7 +435,7 @@ const Index = (props: Props) => {
             }}
           >
             <TouchableOpacity
-              onPress={() => router.push('/convener-screens/edit-cohort')}
+              // onPress={() => router.push('/convener-screens/edit-cohort')}s
             >
               <Text>Edit lesson</Text>
             </TouchableOpacity>
@@ -440,12 +443,12 @@ const Index = (props: Props) => {
               <Text>View as a student</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push('/convener-screens/edit-cohort')}
+              // onPress={() => router.push('/convener-screens/edit-cohort')}s
             >
               <Text>Unpublish lesson</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push('/convener-screens/edit-cohort')}
+              // onPress={() => router.push('/convener-screens/edit-cohort')}s
             >
               <Text>Delete lesson</Text>
             </TouchableOpacity>
