@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-interface ModuleProp{
+export interface ModuleProp{
     community_id: number;
     title: string;
     order_number: number
