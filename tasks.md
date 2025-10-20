@@ -1,5 +1,7 @@
 # 📱 App Development To-Do List
 
+- [ ] Review query implementation, standardize
+
 ## 🚀 Screens to Build
 
 - [ ] Profile Screen

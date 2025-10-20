@@ -29,17 +29,17 @@ const EditProfile = (props: Props) => {
   const [hasChanges, setHasChanges] = useState(false);
   const updateProfileMutation = useUpdateProfile();
   const router = useRouter();
-  const {data: profileData} = useProfile();
+  const { data: profileData } = useProfile();
 
   useEffect(() => {
-    const changes = 
-      firstName !== '' || 
-      lastName !== '' || 
-      location !== '' || 
-      socials !== '' || 
-      bio !== '' || 
+    const changes =
+      firstName !== '' ||
+      lastName !== '' ||
+      location !== '' ||
+      socials !== '' ||
+      bio !== '' ||
       profileImage !== null;
-    
+
     setHasChanges(changes);
   }, [firstName, lastName, location, socials, bio, profileImage]);
 
@@ -53,13 +53,14 @@ const EditProfile = (props: Props) => {
         onError: (error) => {
           Alert.alert('Error', error.message);
         },
-      }
+      },
     );
   };
 
   const pickImage = async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permission required', 'We need access to your photos.');
         return;
@@ -88,8 +89,8 @@ const EditProfile = (props: Props) => {
         'You have unsaved changes. Are you sure you want to leave?',
         [
           { text: 'Stay', style: 'cancel' },
-          { text: 'Leave', onPress: () => router.back() }
-        ]
+          { text: 'Leave', onPress: () => router.back() },
+        ],
       );
     } else {
       router.back();
@@ -113,7 +114,10 @@ const EditProfile = (props: Props) => {
             {profileImage ? (
               <Image
                 source={{ uri: profileImage }}
-                style={[styles.profileImage, { backgroundColor: 'transparent' }]}
+                style={[
+                  styles.profileImage,
+                  { backgroundColor: 'transparent' },
+                ]}
               />
             ) : (
               <View style={styles.profileImage} />
