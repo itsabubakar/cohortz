@@ -11,10 +11,9 @@ import {
 import React, { useState, useEffect } from 'react';
 import { Back, Camera } from '@/assets/icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Input, TextArea } from '@/components/Form';
 import * as ImagePicker from 'expo-image-picker';
-import { updateProfile } from '@/api/profile';
 import { useProfile, useUpdateProfile } from '@/hooks/api/useProfileHook';
 
 type Props = {};
@@ -33,7 +32,6 @@ const EditProfile = (props: Props) => {
   const {data: profileData} = useProfile();
 
   console.log('Profile Data:', profileData);
-  // Check if there are any changes
   useEffect(() => {
     const changes = 
       firstName !== '' || 

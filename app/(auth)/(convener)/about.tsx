@@ -34,6 +34,7 @@ interface UpdateProfileResponse {
     FIRSTNAME?: string;
     LASTNAME?: string;
     USERNAME?: string;
+    TOKEN: string;
   };
 }
 
@@ -71,7 +72,7 @@ const About = () => {
 
 
   const handleSave = async () => {
-    console.log(token)
+    console.log("token: ", token)
     if (!isChecked) {
       Alert.alert('Terms Required', 'Please agree to the terms before continuing.');
       return;
@@ -85,7 +86,7 @@ const About = () => {
       formData.append('password', data.password);
 
 
-      const response: AxiosResponse<UpdateProfileResponse> = await axios.put(
+      const response = await axios.put(
         `${apiURL}/v1/api/profile`,
         formData,
         {
@@ -102,8 +103,11 @@ const About = () => {
         Alert.alert('Success', 'Profile updated successfully!');
         router.navigate({
           pathname: '/(auth)/(convener)/community-info',
-          params: {token: token}
+          params: {token}
         })
+        console.log()
+        
+        console.log('New token saved:', response.data);
       }
     } catch (error: any) {
       console.error('Update Error:', error.response || error);

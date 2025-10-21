@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 import { Text } from '@/theme/theme';
 
 const DropdownInput = () => {
@@ -10,7 +10,7 @@ const DropdownInput = () => {
     <View>
       {/* <Text style={styles.label}></Text> */}
       <View style={styles.pickerContainer}>
-        <Picker
+        {/* <Picker
           selectedValue={selectedValue}
           onValueChange={(itemValue) => setSelectedValue(itemValue)}
           style={styles.picker}
@@ -24,7 +24,7 @@ const DropdownInput = () => {
             
           <Picker.Item value="Enterprenuer" label="Enterprenuer"/>
           <Picker.Item value="Enterprenuer" label="Enterprenuer"/>
-        </Picker>
+        </Picker> */}
       </View>
     </View>
   );

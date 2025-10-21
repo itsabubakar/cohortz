@@ -31,14 +31,6 @@ const CommunityInfo = () => {
 
   const { token } = useLocalSearchParams<{ token?: string }>();
 
-  // Detect field changes
-  useEffect(() => {
-    const changes =
-      data.username.trim() !== '' ||
-      data.password.trim() !== '';
-    setHasChanges(changes);
-  }, [data]);
-
   const handleChange = (field: keyof FormData, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
@@ -88,7 +80,7 @@ const CommunityInfo = () => {
     } catch (error: any) {
       console.error('Update Error:', error);
       const message =
-        error.response?.data?.message ||
+        error.response?.data?.message
         error.message ||
         'Something went wrong while updating your profile.';
       Alert.alert('Error', message);

@@ -1,0 +1,35 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+const apiURL = process.env.EXPO_PUBLIC_API_URL;
+
+const convenersCohorts = async () => {
+  const token = await AsyncStorage.getItem('authToken');
+  try {
+    const response = await axios.get(`${apiURL}/v1/api/cohorts/owner`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+      },
+    });
+    console.log("Fetched convener's cohorts:", response.data.cohorts);  
+    return response.data.cohorts;
+    
+  } catch (error) {
+    console.error("Error fetching convener's cohorts:", error);
+    throw error;
+  }
+}
+
+export const useConvenersCohorts = () => {
+  return useQuery({
+    queryKey: ['convenersCohorts'],
+    queryFn: convenersCohorts,
+    // ensure the data stays up todaate
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
+} 
