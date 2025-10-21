@@ -2,7 +2,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Back } from '@/assets/icons';
 import { SafeAreaWrapper } from '@/HOC';
 
-import { Link, useNavigation, useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from 'react-native';
@@ -15,6 +15,7 @@ import { OptionModal } from '@/components/optionModal';
 import { DropdownInput } from '@/components/Form';
 import Dropdown from '@/components/dropdown';
 import { NavHead } from '@/components/HeadRoute';
+import useGetCommunity from '@/api/communities/getCommunity';
 
 type Props = {};
 
@@ -22,13 +23,17 @@ const Index = (props: Props) => {
   const [moduleModal, setModuleModal] = useState(false)
   const [optionModal, setOptionModal] = useState(0)
   const [lessonModal, setLessonModal] = useState(false)
+  const { id } = useLocalSearchParams<{id: string}>()
+  const numeric = Number(id)
+  const community = useGetCommunity(5, id)
   const [status, setStatus] = useState<'published' | 'draft'>('published');
 
+  console.log(community)
   const handleStatusChange = (newStatus: 'published' | 'draft') => {
     setStatus(newStatus);
     console.log('Status changed to:', newStatus);
   };
-  
+  console.log(id)
   const handleModuleModal = () => {
     setModuleModal(!moduleModal)
   }

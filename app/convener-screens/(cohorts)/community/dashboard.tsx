@@ -97,7 +97,7 @@ export default function Dashboard() {
                     <Text style={styles.statusText}>Status: Draft</Text>
                 </View>
                 <MaterialIcons name="menu-book" size={16} color="#6B7280" />
-                <Link style={{marginLeft: 10, textDecorationLine: "underline", color: colors.primary}} href={"/convener-screens/lesson/create-module"} >View Courses</Link>
+                <Link style={{marginLeft: 10, textDecorationLine: "underline", color: colors.primary}} href={"/convener-screens/(cohorts)/community/create-module"} >View Courses</Link>
             </View>
 
             {/* Waitlist */}

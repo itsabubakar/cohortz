@@ -82,7 +82,7 @@ const Index = (props: Props) => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [cohortGroup, setCohortGroup] = useState("Branding & Branding Design");
   const [communityAccess, setCommunityAccess] = useState(false);
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>(); // cohort id
   const numericId = Number(id);
 
   const apiURL = process.env.EXPO_PUBLIC_API_URL as string
@@ -185,7 +185,7 @@ const Index = (props: Props) => {
           showsVerticalScrollIndicator={false}
         >
           {communities.map((community:CommunityType) => (
-            <Lesson
+            <Community
              {...community} onOpenBottomSheet={openBottomSheet}/>
           ))}
           <TouchableOpacity
@@ -464,12 +464,15 @@ export default Index;
 
 type LessonProps = CommunityType & { onOpenBottomSheet: () => void };
 
-const Lesson = ({ id, cohort_id, name, onOpenBottomSheet }: LessonProps) => {
+const Community  = ({ id, cohort_id, name, onOpenBottomSheet }: LessonProps) => {
   const router = useRouter();
   return (
     <TouchableOpacity
     key={id}
-      onPress={() => router.push('/convener-screens/community/dashboard')}
+      onPress={() => router.navigate({
+        pathname: '/convener-screens/community/(course)/[id]',
+        params: {id, cohort_id}
+      })}
       style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}
     >
       <View style={styles.profileImage} />
