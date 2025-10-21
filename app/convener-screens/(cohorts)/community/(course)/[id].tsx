@@ -16,6 +16,7 @@ import { DropdownInput } from '@/components/Form';
 import Dropdown from '@/components/dropdown';
 import { NavHead } from '@/components/HeadRoute';
 import useGetCommunity from '@/api/communities/getCommunity';
+import { usePostModule } from '@/api/communities/modules/postModule';
 
 type Props = {};
 
@@ -26,9 +27,9 @@ const Index = (props: Props) => {
   const { id } = useLocalSearchParams<{id: string}>()
   const numeric = Number(id)
   const community = useGetCommunity(5, id)
+  const {mutate} = usePostModule(numeric)
   const [status, setStatus] = useState<'published' | 'draft'>('published');
 
-  console.log(community)
   const handleStatusChange = (newStatus: 'published' | 'draft') => {
     setStatus(newStatus);
     console.log('Status changed to:', newStatus);
@@ -55,6 +56,23 @@ const Index = (props: Props) => {
     return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   };
 
+  const handleCreateModuel = () => {
+    const newModule = {
+      community_id: numeric,
+      title: "Hallo",
+      order_number: 1
+    }
+    mutate(newModule, {
+      onSuccess: (response) => {
+        console.log("SUccessful!: ", response)
+      },
+      onError: (error) => {
+        console.log("Failed to Create: ", error)
+      }
+    }) 
+
+  }
+
   return (
     <SafeAreaWrapper>
       
@@ -73,7 +91,7 @@ const Index = (props: Props) => {
         <Text style={styles.topInfoText}>
           <Text style={styles.bold}>1</Text> Modules • <Text style={styles.bold}>0</Text> contents
         </Text>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity onPress={handleCreateModuel} style={styles.addButton}>
           <Text style={styles.addButtonText}>Add module</Text>
         </TouchableOpacity>
       </View>
@@ -85,7 +103,7 @@ const Index = (props: Props) => {
         {/* Module */}
         <View style={styles.moduleItem}>
           <View style={styles.moduleHeader}>
-            <Ionicons name="menu-outline" size={20} color="#000" />
+            <Ionicons name="menu-outline" size={10} color="#000" />
             <Text style={styles.moduleName}>MODULE NAME</Text>
             <TouchableOpacity style={styles.addNew}>
               <Text style={styles.addNewText}>Add lesson</Text>
