@@ -18,6 +18,9 @@ import { NavHead } from '@/components/HeadRoute';
 import useGetCommunity from '@/api/communities/getCommunity';
 import { usePostModule } from '@/api/communities/modules/postModule';
 import useGetModules from '@/api/communities/modules/getModules';
+import { LessonProp, usePostLesson } from '@/api/communities/lessons/postLessons';
+import { useGetLessons } from '@/api/communities/lessons/getLessons';
+import { useDeleteLesson } from '@/api/communities/lessons/deleteLesson';
 
 type Props = {};
 
@@ -38,11 +41,11 @@ const Index = (props: Props) => {
     return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   };
 
-  const handleCreateModuel = () => {
+  const handleCreateModule = () => {
     const newModule = {
       community_id: numeric,
       title: "Intro to BB-Gun",
-      order_number: 1
+      order_number: modules.length + 1
     }
     mutate(newModule, {
       onSuccess: (response) => {
@@ -73,7 +76,7 @@ const Index = (props: Props) => {
         <Text style={styles.topInfoText}>
           <Text style={styles.bold}>{modules.length}</Text> Modules • <Text style={styles.bold}>0</Text> contents
         </Text>
-        <TouchableOpacity onPress={handleCreateModuel} style={styles.addButton}>
+        <TouchableOpacity onPress={handleCreateModule} style={styles.addButton}>
           <Text style={styles.addButtonText}>Add module</Text>
         </TouchableOpacity>
       </View>
@@ -103,172 +106,263 @@ export default Index;
 
 interface ModuleType {
   id: number;
-  community_id: number
+  community_id: number;
   title: string;
   order_number: number;
-  status: string
+  status: string;
 }
-const Module = ({id, community_id, title, order_number, status}: ModuleType) => {
-    const [moduleModal, setModuleModal] = useState(false)
-    const [optionModal, setOptionModal] = useState(0)
-    const [lessonModal, setLessonModal] = useState(false)
 
-    const handleModuleModal = () => {
-        setModuleModal(!moduleModal)
-    }
-    
-    const handleLessonModal = () => {
-        setLessonModal(!lessonModal)
-    }
-    
-    const openOptionModal = (modal: number) => {
-        setOptionModal(modal)
-        // Close the bottom option modal when opening a slide modal
-        setModuleModal(false);
-        setLessonModal(false);
-    }
-        const handleStatusChange = (newStatus: 'published' | 'draft') => {
-        console.log('Status changed to:', newStatus);
+export const Module = ({ id, community_id, title }: ModuleType) => {
+  const [selectedLesson, setSelectedLesson] = useState<LessonProp | null>(null);
+  const [optionModal, setOptionModal] = useState(0);
+
+  const [moduleOptionModal, setModuleOptionModal] = useState(false);
+  const [lessonOptionModal, setLessonOptionModal] = useState(false);
+
+  const { data: lessons = [] } = useGetLessons(id);
+  const { mutate } = usePostLesson(id);
+  const { mutateAsync: deleteLesson } = useDeleteLesson(id);
+
+  const openLessonModal = (lesson: LessonProp) => {
+    setSelectedLesson(lesson);
+    setLessonOptionModal(true);
+  };
+
+  const closeLessonModal = () => {
+    setSelectedLesson(null);
+    setLessonOptionModal(false);
+  };
+
+  const openOptionModal = (modal: number) => {
+    setOptionModal(modal);
+    setLessonOptionModal(false);
+  };
+
+  // -------------------- CREATE LESSON --------------------
+  const handleCreateLesson = () => {
+    const newLesson = {
+      module_id: id,
+      name: "New Lesson",
+      description: "",
+      url: "",
+      order_number: lessons.length + 1,
     };
+    mutate(newLesson, {
+      onSuccess: (res) => {
+        console.log("Lesson created:", res);
+      },
+      onError: (err) => console.log("Lesson creation failed:", err),
+    });
+  };
 
-    
+  // -------------------- STATUS CHANGE --------------------
+  const handleStatusChange = (
+    lessonId: number,
+    newStatus: "published" | "draft"
+  ) => {
+    console.log(`Lesson ${lessonId} changed to ${newStatus}`);
+    // optional: trigger mutation here
+  };
 
-    return (
-        <View style={styles.moduleItem} key={id}>
-            <View style={styles.moduleHeader}>
-            <Ionicons name="menu-outline" size={10} color="#000" />
-            <Text style={styles.moduleName}>{title}</Text>
-            <TouchableOpacity style={styles.addNew}>
-                <Text style={styles.addNewText}>Add lesson</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleModuleModal}>
-                <Ionicons name="ellipsis-vertical" size={18} color="#8E8E8E" />
-            </TouchableOpacity>
+  // -------------------- RENAME --------------------
+  const handleRenameLesson = () => {
+    if (!selectedLesson) return;
+    console.log("Renaming lesson:", selectedLesson);
+    // trigger rename mutation if you have one
+    setOptionModal(0);
+  };
+
+  // -------------------- DELETE --------------------
+  const handleDeleteLesson = async () => {
+    if (!selectedLesson?.id) return;
+    try {
+      await deleteLesson(selectedLesson.id);
+      console.log("Lesson deleted:", selectedLesson.id);
+      setOptionModal(0);
+    } catch (error) {
+      console.error("Error deleting lesson:", error);
+    }
+  };
+
+  // -------------------- UI --------------------
+  return (
+    <View style={styles.moduleItem} key={id}>
+      {/* Module Header */}
+      <View style={styles.moduleHeader}>
+        <Ionicons name="menu-outline" size={14} color="#000" />
+        <Text style={styles.moduleName}>{title}</Text>
+        <TouchableOpacity onPress={handleCreateLesson} style={styles.addNew}>
+          <Text style={styles.addNewText}>Add lesson</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {}}>
+          <Ionicons name="ellipsis-vertical" size={18} color="#8E8E8E" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Lessons List */}
+      <View style={styles.lessonContainer}>
+        {lessons.length > 0 ? (
+          lessons.map((lesson: LessonProp) => (
+            <View key={lesson.id} style={styles.lessonRow}>
+              <Ionicons name="menu-outline" size={16} color="#8E8E8E" />
+              <Text style={styles.lessonText}>{lesson.name}</Text>
+              <TouchableOpacity onPress={() => openLessonModal(lesson)}>
+                <Ionicons name="ellipsis-vertical" size={16} color="#8E8E8E" />
+              </TouchableOpacity>
             </View>
+          ))
+        ) : (
+          <Text style={{ color: "#888", marginLeft: 10 }}>No lessons yet.</Text>
+        )}
+      </View>
 
-            {/* Lessons */}
-            <View style={styles.lessonContainer}>
-            {["Lesson name", "Lesson name", "Lesson name"].map((lesson, i) => (
-                <View key={i} style={styles.lessonRow}>
-                <Ionicons name="menu-outline" size={16} color="#8E8E8E" />
-                <Text style={styles.lessonText}>{lesson}</Text>
-                <TouchableOpacity onPress={handleLessonModal}>
-                    <Ionicons name="ellipsis-vertical" size={16} color="#8E8E8E" />
-                </TouchableOpacity>
-                </View>
-            ))}
+      {/* LESSON OPTIONS MODAL */}
+      <OptionModal isVisible={lessonOptionModal} onBackdropPress={closeLessonModal}>
+        <SafeAreaView
+          style={{
+            backgroundColor: "white",
+            padding: 20,
+            paddingTop: 40,
+            borderTopEndRadius: 20,
+            borderTopLeftRadius: 20,
+            gap: 10,
+          }}
+        >
+          {selectedLesson ? (
+            <>
+              <View>
+                <Dropdown
+                  value={selectedLesson.status ?? "draft"}
+                  onChange={(newStatus) =>
+                    handleStatusChange(selectedLesson.id!, newStatus)
+                  }
+                />
+              </View>
+
+              <Link
+                href={{
+                  pathname: "/convener-screens/lesson/uploadLesson",
+                  params: { lessonId: selectedLesson.id },
+                }}
+              >
+                Upload
+              </Link>
+
+              <Text onPress={() => openOptionModal(4)}>
+                Rename "{selectedLesson.name}"
+              </Text>
+              <Text onPress={() => openOptionModal(5)}>
+                Delete "{selectedLesson.name}"
+              </Text>
+            </>
+          ) : (
+            <Text>No lesson selected</Text>
+          )}
+        </SafeAreaView>
+      </OptionModal>
+
+      {/* SLIDE MODALS */}
+      <SlideModal
+        isVisible={optionModal !== 0}
+        onBackdropPress={() => setOptionModal(0)}
+      >
+        {/* RENAME LESSON */}
+        {optionModal === 4 && selectedLesson && (
+          <View
+            style={{
+              width: "100%",
+              backgroundColor: "white",
+              padding: 20,
+              borderRadius: 8,
+              paddingVertical: 30,
+              gap: 32,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}>
+              Rename Lesson
+            </Text>
+            <View style={{ gap: 5 }}>
+              <Text style={{ fontWeight: 600 }}>Title</Text>
+              <TextInput
+                defaultValue={selectedLesson.name}
+                style={{
+                  borderWidth: 1,
+                  paddingHorizontal: 13,
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  borderColor: "grey",
+                }}
+                placeholder="Lesson 1"
+              />
             </View>
-
-            {/* Module Option Modal */}
-            <OptionModal
-            isVisible={moduleModal}
-            onBackdropPress={handleModuleModal}
-                >
-                <SafeAreaView style={{backgroundColor: "white", padding: 20, paddingTop: 40, borderTopEndRadius: 20, borderTopLeftRadius: 20, gap: 10}}>
-                    <Text onPress={() => openOptionModal(1)}>Rename Module</Text>
-                    <Text onPress={() => openOptionModal(2)}>Delete Module</Text>
-                </SafeAreaView>
-            </OptionModal>
-
-            {/* Lesson Option Modal */}
-            <OptionModal
-            isVisible={lessonModal}
-            onBackdropPress={handleLessonModal}
+            <TouchableOpacity
+              style={{
+                borderRadius: 50,
+                padding: 12,
+                backgroundColor: colors.primary,
+              }}
+              onPress={handleRenameLesson}
             >
-            <SafeAreaView style={{backgroundColor: "white", padding: 20, paddingTop: 40, borderTopEndRadius: 20, borderTopLeftRadius: 20, gap: 10}}>
-                <View>
-                <Dropdown value={"draft"} onChange={handleStatusChange} />
-                </View>
-                <Link href={"/convener-screens/lesson/uploadLesson"}>Upload</Link>
-                <Text onPress={() => openOptionModal(4)}>Rename</Text>
-                <Text onPress={() => openOptionModal(5)}>Delete</Text>
-            </SafeAreaView>
-            </OptionModal>
+              <Text style={{ color: colors.white, textAlign: "center" }}>
+                Save Changes
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-            {/* Slide Modals */}
-            <SlideModal
-            isVisible={optionModal !== 0}
-            onBackdropPress={() => {setOptionModal(0)}}
-            >
-            {/* Rename Module Modal */}
-            {optionModal === 1 && (
-                <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
-                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Rename Module</Text>
-                <View style={{gap: 5}}>
-                    <Text style={{fontWeight: 600}}>Title</Text>
-                    <TextInput 
-                    style={{borderWidth: 1, paddingHorizontal: 13, paddingVertical: 8, borderRadius: 8, borderColor: "grey" }}
-                    placeholder='Module'
-                    />
-                </View>
-                <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.primary}}>
-                    <Text style={{color: colors.white, textAlign: "center"}}>Save Changes</Text>
-                </TouchableOpacity>
-                </View>
-            )}
+        {/* DELETE LESSON */}
+        {optionModal === 5 && selectedLesson && (
+          <View
+            style={{
+              width: "100%",
+              backgroundColor: "white",
+              padding: 20,
+              borderRadius: 8,
+              paddingVertical: 30,
+              gap: 32,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: 700, textAlign: "center" }}>
+              Delete Lesson
+            </Text>
+            <View style={{ gap: 5, marginBottom: 20 }}>
+              <Text>
+                Are you sure you want to delete "{selectedLesson.name}" from this
+                module?
+              </Text>
+            </View>
+            <View style={{ gap: 10 }}>
+              <TouchableOpacity
+                style={{
+                  borderRadius: 50,
+                  padding: 12,
+                  backgroundColor: colors.red,
+                }}
+                onPress={handleDeleteLesson}
+              >
+                <Text style={{ color: colors.white, textAlign: "center" }}>
+                  Confirm
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  borderRadius: 50,
+                  padding: 12,
+                  borderColor: colors.primary,
+                  borderWidth: 1,
+                }}
+                onPress={() => setOptionModal(0)}
+              >
+                <Text style={{ textAlign: "center" }}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </SlideModal>
+    </View>
+  );
+};
 
-            {/* Delete Module Modal */}
-            {optionModal === 2 && (
-                <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
-                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Delete module</Text>
-                <View style={{gap: 5, marginBottom: 20}}>
-                    <Text>Are you sure you want to delete "Module 1" and all of it's lessons from this curriculum?</Text>
-                </View>
-                <View style={{gap: 10}}>
-                    <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.red}}>
-                    <Text style={{color: colors.white, textAlign: "center"}}>Confirm</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                    style={{borderRadius: 50, padding: 12, borderColor: colors.primary, borderWidth: 1}}
-                    onPress={() => setOptionModal(0)}
-                    >
-                    <Text style={{textAlign: "center"}}>Cancel</Text>
-                    </TouchableOpacity>
-                </View>
-                </View>
-            )}
-
-            {/* Rename Lesson Modal */}
-            {optionModal === 4 && (
-                <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
-                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Rename Lesson</Text>
-                <View style={{gap: 5}}>
-                    <Text style={{fontWeight: 600}}>Title</Text>
-                    <TextInput 
-                    style={{borderWidth: 1, paddingHorizontal: 13, paddingVertical: 8, borderRadius: 8, borderColor: "grey" }}
-                    placeholder='Lesson 1'
-                    />
-                </View>
-                <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.primary}}>
-                    <Text style={{color: colors.white, textAlign: "center"}}>Save Changes</Text>
-                </TouchableOpacity>
-                </View>
-            )}
-
-            {/* Delete Lesson Modal */}
-            {optionModal === 5 && (
-                <View style={{width: "100%", backgroundColor: "white", padding: 20, borderRadius: 8, paddingVertical: 30, gap: 32}}>
-                <Text style={{fontSize: 20, fontWeight: 700, textAlign: 'center'}}>Delete Lesson</Text>
-                <View style={{gap: 5, marginBottom: 20}}>
-                    <Text>Are you sure you want to delete "Lesson 1" from this module?</Text>
-                </View>
-                <View style={{gap: 10}}>
-                    <TouchableOpacity style={{borderRadius: 50, padding: 12, backgroundColor: colors.red}}>
-                    <Text style={{color: colors.white, textAlign: "center"}}>Confirm</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                    style={{borderRadius: 50, padding: 12, borderColor: colors.primary, borderWidth: 1}}
-                    onPress={() => setOptionModal(0)}
-                    >
-                    <Text style={{textAlign: "center"}}>Cancel</Text>
-                    </TouchableOpacity>
-                </View>
-                </View>
-            )}
-            </SlideModal>
-        </View>
-    )
-}
 
 const styles = StyleSheet.create({
     container: {
