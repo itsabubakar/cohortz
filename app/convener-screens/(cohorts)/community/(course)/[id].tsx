@@ -21,13 +21,11 @@ import useGetModules from '@/api/communities/modules/getModules';
 import { LessonProp, usePostLesson } from '@/api/communities/lessons/postLessons';
 import { useGetLessons } from '@/api/communities/lessons/getLessons';
 import { useDeleteLesson } from '@/api/communities/lessons/deleteLesson';
+import { useEditLesson } from '@/api/communities/lessons/updateLesson';
 
 type Props = {};
 
 const Index = (props: Props) => {
-  const [moduleModal, setModuleModal] = useState(false)
-  const [optionModal, setOptionModal] = useState(0)
-  const [lessonModal, setLessonModal] = useState(false)
   const { id } = useLocalSearchParams<{id: string}>()
   const numeric = Number(id)
   const community = useGetCommunity(5, id)
@@ -119,9 +117,35 @@ export const Module = ({ id, community_id, title }: ModuleType) => {
   const [moduleOptionModal, setModuleOptionModal] = useState(false);
   const [lessonOptionModal, setLessonOptionModal] = useState(false);
 
-  const { data: lessons = [] } = useGetLessons(id);
-  const { mutate } = usePostLesson(id);
+  const { data: lessons = [], refetch } = useGetLessons(id);
+  const { mutate: editLesson } = useEditLesson();
   const { mutateAsync: deleteLesson } = useDeleteLesson(id);
+  const {mutate: CreateLesson} =  usePostLesson(id)
+  
+    const [newLessonName, setNewLessonName] = useState("");
+
+  const handleRenameLesson = () => {
+  if (!selectedLesson?.id) return;
+  if (!newLessonName.trim()) return;
+
+  editLesson(
+    {
+      module_id: id,
+      lesson_id: selectedLesson.id,
+      data: { name: newLessonName },
+    },
+    {
+      onSuccess: () => {
+        console.log("Lesson renamed successfully");
+        refetch?.(); // safe optional chaining
+        setOptionModal(0);
+      },
+      onError: (err) => {
+        console.error("Error renaming lesson:", err.response?.data || err);
+      },
+    }
+  );
+};
 
   const openLessonModal = (lesson: LessonProp) => {
     setSelectedLesson(lesson);
@@ -147,7 +171,7 @@ export const Module = ({ id, community_id, title }: ModuleType) => {
       url: "",
       order_number: lessons.length + 1,
     };
-    mutate(newLesson, {
+    CreateLesson(newLesson, {
       onSuccess: (res) => {
         console.log("Lesson created:", res);
       },
@@ -156,21 +180,25 @@ export const Module = ({ id, community_id, title }: ModuleType) => {
   };
 
   // -------------------- STATUS CHANGE --------------------
-  const handleStatusChange = (
-    lessonId: number,
-    newStatus: "published" | "draft"
-  ) => {
-    console.log(`Lesson ${lessonId} changed to ${newStatus}`);
-    // optional: trigger mutation here
-  };
+const handleStatusChange = (lessonId: number, newStatus: "published" | "draft") => {
+  editLesson(
+    {
+      module_id: id,
+      lesson_id: lessonId,
+      data: { status: newStatus },
+    },
+    {
+      onSuccess: () => {
+        console.log(`Lesson ${lessonId} updated to ${newStatus}`);
+        refetch();
+      },
+      onError: (err) => {
+        console.error("Error updating status:", err);
+      },
+    }
+  );
+};
 
-  // -------------------- RENAME --------------------
-  const handleRenameLesson = () => {
-    if (!selectedLesson) return;
-    console.log("Renaming lesson:", selectedLesson);
-    // trigger rename mutation if you have one
-    setOptionModal(0);
-  };
 
   // -------------------- DELETE --------------------
   const handleDeleteLesson = async () => {
@@ -178,6 +206,7 @@ export const Module = ({ id, community_id, title }: ModuleType) => {
     try {
       await deleteLesson(selectedLesson.id);
       console.log("Lesson deleted:", selectedLesson.id);
+      refetch()
       setOptionModal(0);
     } catch (error) {
       console.error("Error deleting lesson:", error);
@@ -284,7 +313,9 @@ export const Module = ({ id, community_id, title }: ModuleType) => {
             <View style={{ gap: 5 }}>
               <Text style={{ fontWeight: 600 }}>Title</Text>
               <TextInput
-                defaultValue={selectedLesson.name}
+        defaultValue={selectedLesson.name}
+        value={newLessonName || selectedLesson.name}
+        onChangeText={setNewLessonName}
                 style={{
                   borderWidth: 1,
                   paddingHorizontal: 13,
