@@ -80,7 +80,7 @@ const EmailConfirmation = (props: Props) => {
         {/* <Text>We'll send you a quick email to confirm your address.</Text> */}
         
         
-        <View style={{gap: 1}}>
+        <View style={{gap: 1, marginTop: 2}}>
           <Text>Password</Text>
           <TextInput 
             style={styles.input}
@@ -90,7 +90,7 @@ const EmailConfirmation = (props: Props) => {
             onChangeText={setEmail}
           />
         </View>
-        <View style={{gap: 1}}>
+        <View style={{gap: 1, marginTop: 2}}>
           <Text>Password</Text>
           <TextInput 
             style={styles.input}
@@ -101,7 +101,7 @@ const EmailConfirmation = (props: Props) => {
             placeholder="Confirm Password"
           />
         </View>
-        <View style={{gap: 1}}>
+        <View style={{gap: 1, marginTop: 2}}>
           <Text>Confirm Password</Text>
           <TextInput 
             style={styles.input}
