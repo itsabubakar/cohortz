@@ -1,4 +1,13 @@
 {
+  "expo": {
+    "name": "Cohortle",
+    "slug": "cohortle",
+    "version": "0.0.1",
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/<YOUR_PROJECT_ID>"
+    }
+  },
   "build": {
     "development": {
       "developmentClient": true,
