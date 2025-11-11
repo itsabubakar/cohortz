@@ -28,7 +28,7 @@ const Structure = () => {
             community_structure: selected ?? undefined, // will be set on next screen
           },
         });
-  console.log("Saved community structure:", selected);
+        console.log("Saved community structure:", selected);
         Alert.alert('Success', 'Cohort info updated successfully');
         // ✅ Navigate to next step
         router.push(`/(auth)/login`);

@@ -75,7 +75,7 @@ const CommunityInfo = () => {
         Alert.alert('Update Failed', 'Failed to update profile. Please try again.');
       } else {
         Alert.alert('Success', 'Profile updated successfully!');
-        router.back();
+        router.push(`/(auth)/login`);
       }
     } catch (error: any) {
       console.error('Update Error:', error);

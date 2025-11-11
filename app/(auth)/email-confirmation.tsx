@@ -17,6 +17,8 @@ type EmailResponse = {
 }
 const EmailConfirmation = (props: Props) => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,17 +36,25 @@ const EmailConfirmation = (props: Props) => {
       setError("Please enter a valid email address.");
       return;
     }
+    if (!password || !confirmPassword) {
+      setError('Password and confirm password are required.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
     setLoading(true);
     setError("");
 
     try {
       const response = await axios.post(`${apiURL}/v1/api/auth/register-email`, 
-        { email }
+        { email, password }
       );
       if (!response.data.error) {
         router.navigate({
-          pathname: '/(auth)/check-email',
-          params: { token: response.data.link}
+          pathname: '/(auth)/signUp',
+          params: { token: response.data.token}
         });
         console.log("sent!")
       } else {
@@ -64,14 +74,44 @@ const EmailConfirmation = (props: Props) => {
   return (
     <SafeAreaWrapper>
       <View style={styles.container}>
-        <Text variant={'l'} style={styles.header}>Your email address</Text>
-        <Text>We'll send you a quick email to confirm your address.</Text>
-        <TextInput 
-          style={styles.input}
-          value={email}
-          editable={!loading}
-          onChangeText={setEmail}
-        />
+        <Text variant={'l'} style={styles.header}>Sign up for Cohortle</Text>
+        
+        <Text>Fill in the field to create an account</Text>
+        {/* <Text>We'll send you a quick email to confirm your address.</Text> */}
+        
+        
+        <View style={{gap: 1}}>
+          <Text>Password</Text>
+          <TextInput 
+            style={styles.input}
+            autoCapitalize="none"
+            value={email}
+            editable={!loading}
+            onChangeText={setEmail}
+          />
+        </View>
+        <View style={{gap: 1}}>
+          <Text>Password</Text>
+          <TextInput 
+            style={styles.input}
+            value={password}
+            editable={!loading}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholder="Confirm Password"
+          />
+        </View>
+        <View style={{gap: 1}}>
+          <Text>Confirm Password</Text>
+          <TextInput 
+            style={styles.input}
+            value={confirmPassword}
+            editable={!loading}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            placeholder="Confirm Password"
+          />
+        </View>
         <View style={{ marginTop: 36 }}>
           <Button
             text="Next"
