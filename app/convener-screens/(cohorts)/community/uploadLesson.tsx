@@ -49,19 +49,29 @@ const CreateLesson= () => {
 
   // Handle files from react-native-image-picker
   if ('fileName' in file) {
+    const fileType = file.type ?? 'application/octet-stream';
+    
+    // Better video detection for image picker
+    const isVideo = fileType.startsWith('video/') || 
+                   (file.type === undefined && file.uri?.includes('.mp4')) ||
+                   (file.type === undefined && file.uri?.includes('.mov'));
+    
     unified = {
       uri: file.uri ?? '',
-      type: file.type ?? 'application/octet-stream',
+      type: isVideo ? 'video' : fileType.startsWith('image/') ? 'image' : 'document',
       name: file.fileName ?? 'unknown',
       size: file.fileSize ?? undefined,
     };
   }
-
   // Handle files from expo-document-picker
   else if ('name' in file && 'uri' in file) {
+    const fileType = (file.mimeType as string) ?? 'application/octet-stream';
+    
     unified = {
       uri: file.uri,
-      type: (file.mimeType as string) ?? 'application/octet-stream',
+      type: fileType.startsWith('video/') ? 'video' : 
+            fileType.startsWith('audio/') ? 'audio' : 
+            fileType.startsWith('image/') ? 'image' : 'document',
       name: file.name,
       size: file.size ?? undefined,
     };
@@ -72,22 +82,8 @@ const CreateLesson= () => {
     return;
   }
 
-  // Determine file category
-  const fileCategory =
-    unified.type.startsWith('video/')
-      ? 'video'
-      : unified.type.startsWith('audio/')
-      ? 'audio'
-      : unified.type.startsWith('image/')
-      ? 'image'
-      : 'document';
-
-  setMedia({
-    uri: unified.uri,
-    type: fileCategory,
-    name: unified.name || `file.${fileCategory}`,
-    size: unified.size,
-  });
+  console.log('Selected media:', unified); // Debug log
+  setMedia(unified);
 };
 
   // ✅ Opens file picker for images or videos
@@ -179,12 +175,15 @@ const pickDocumentsOrAudio = async () => {
       case 'video':
         return (
           <View style={styles.videoContainer}>
-            <Video
-              source={{ uri: media.uri }}
-              style={styles.videoPreview}
-              paused={true}
-              resizeMode="cover"
-            />
+            {media.uri ? (
+              <Video
+                source={{ uri: media.uri }}
+                style={styles.videoPreview}
+                paused={true}
+                resizeMode="cover"
+                onError={(error) => console.log('Video Error:', error)}
+              />
+            ) : null}
             <Text style={styles.videoIcon}>▶️</Text>
           </View>
         );
@@ -217,7 +216,7 @@ const pickDocumentsOrAudio = async () => {
         <View style={styles.header}>
           
                 <View style={styles.header}>
-                  <Text style={{fontSize: 20, fontWeight: "700",}}>{lessonData.name}</Text>
+                  <Text style={{fontSize: 20, fontWeight: "700",}}>{isLoading ? "..." : lessonData.name}</Text>
                   <Text style={{ fontSize: 14, color: "#555", marginTop: 4, }}
                   >
                     Course type: <Text style={{textDecorationLine: "underline", color: "#000",}}>Self-paced</Text>
@@ -246,9 +245,9 @@ const pickDocumentsOrAudio = async () => {
             ) : (
               <View style={{gap: 8, alignItems: 'center'}}>
                 <Text style={styles.uploadIcon}>📁</Text>
-                {lessonData.media ? (
+                {lessonData?.media ? (
                   
-                <Text style={styles.uploadSubtext}>{lessonData.media}</Text>
+                <Text style={styles.uploadSubtext}>{lessonData?.media}</Text>
                 ) : (
                   
                 <Text style={styles.uploadSubtext}>Videos, audio, images, documents</Text>
