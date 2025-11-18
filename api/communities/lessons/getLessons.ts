@@ -29,7 +29,8 @@ export const useGetLessons = (id: number) => {
         queryFn: () => getLessons(id),
         refetchOnReconnect: true,
         refetchOnWindowFocus: true,
-        staleTime: 0,
-        enabled: !!id,
+        refetchInterval: 5000,
+        // staleTime: 0,
+        // enabled: !!id,
     })
 }

@@ -7,10 +7,11 @@ import { BackArrowIcon } from '@/assets/icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { colors } from '@/utils/color';
 import { useUpdateCohort } from '@/api/updateCohorts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Structure = () => {
   const [selected, setSelected] = useState<string | null>(null);
-  const {cohort_id, token} = useLocalSearchParams<{cohort_id: string, token: string}>();
+  const {cohort_id} = useLocalSearchParams<{cohort_id: string, token: string}>();
   const updateCohort = useUpdateCohort();
   const router = useRouter();
 
@@ -19,7 +20,7 @@ const Structure = () => {
   };
 
     const handleSave = async () => {
-  
+      const token = await AsyncStorage.getItem('authToken');
       try {
         await updateCohort.mutateAsync({
           cohort_id: Number(cohort_id),

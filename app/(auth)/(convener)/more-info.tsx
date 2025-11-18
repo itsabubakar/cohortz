@@ -15,6 +15,7 @@ import { BackArrowIcon } from '@/assets/icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import Modal from 'react-native-modal';
 import { useUpdateCohort } from '@/api/updateCohorts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // reusable modal dropdown
 const ModalDropdown = ({
@@ -80,9 +81,10 @@ const MoreInfo = () => {
 
   const updateCohort = useUpdateCohort();
   const router = useRouter();
-  const { cohort_id, token } = useLocalSearchParams()
+  const { cohort_id } = useLocalSearchParams()
 
   const handleNext = async () => {
+    const token = await AsyncStorage.getItem('authToken');
     try {
       await updateCohort.mutateAsync({
         cohort_id: Number(cohort_id),

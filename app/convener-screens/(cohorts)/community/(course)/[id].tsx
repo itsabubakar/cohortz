@@ -270,8 +270,8 @@ const handleStatusChange = (lessonId: number, newStatus: "published" | "draft") 
 
               <Link
                 href={{
-                  pathname: "/convener-screens/lesson/uploadLesson",
-                  params: { lessonId: selectedLesson.id },
+                  pathname: "/convener-screens/community/uploadLesson",
+                  params: { lessonId: selectedLesson.id, moduleId: id, moduleTitle: title },
                 }}
               >
                 Upload
@@ -313,8 +313,8 @@ const handleStatusChange = (lessonId: number, newStatus: "published" | "draft") 
             <View style={{ gap: 5 }}>
               <Text style={{ fontWeight: 600 }}>Title</Text>
               <TextInput
-        defaultValue={selectedLesson.name}
-        value={newLessonName || selectedLesson.name}
+              placeholder={selectedLesson.name}
+        value={newLessonName}
         onChangeText={setNewLessonName}
                 style={{
                   borderWidth: 1,
@@ -323,7 +323,6 @@ const handleStatusChange = (lessonId: number, newStatus: "published" | "draft") 
                   borderRadius: 8,
                   borderColor: "grey",
                 }}
-                placeholder="Lesson 1"
               />
             </View>
             <TouchableOpacity

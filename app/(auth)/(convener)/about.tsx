@@ -101,9 +101,11 @@ const About = () => {
         Alert.alert('Update Failed', JSON.stringify(response.data.message, null, 2));
       } else {
         Alert.alert('Success', 'Profile updated successfully!');
+          await AsyncStorage.setItem('authToken', token);
+          console.log('New token saved to AsyncStorage:', token);
         router.navigate({
           pathname: '/(auth)/(convener)/community-info',
-          params: {token}
+          params: {token: token}
         })
         console.log()
         

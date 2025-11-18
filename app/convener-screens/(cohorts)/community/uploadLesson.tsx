@@ -21,6 +21,9 @@ import type { DocumentPickerResult, DocumentPickerAsset } from 'expo-document-pi
 import Video from 'react-native-video';
 import { colors } from '@/utils/color';
 import { NavHead } from '@/components/HeadRoute';
+import { useLocalSearchParams } from 'expo-router';
+import { useGetLesson } from '@/api/communities/lessons/getLesson';
+import { uploadLessonMedia } from '@/api/communities/lessons/uploadMedia';
 
 // Unified type for any file/media selected
 interface MediaFile {
@@ -34,6 +37,11 @@ const CreateLesson= () => {
   const [title, setTitle] = useState<string>('Introduction');
   const [media, setMedia] = useState<MediaFile | null>(null);
   const [text, setText] = useState<string>('');
+  const lessonID = useLocalSearchParams().lessonId as string;
+  const moduleID = useLocalSearchParams().moduleId as string;
+  const moduleTitle = useLocalSearchParams().moduleTitle
+  const {data: lessonData, isLoading} = useGetLesson(lessonID, moduleID);
+  const [loading, setLoading] = useState(false)
 
   // ✅ Normalizes both picker results (ImagePicker + DocumentPicker)
   const handleMediaSelected = (file: Asset | DocumentPickerAsset) => {
@@ -143,8 +151,22 @@ const pickDocumentsOrAudio = async () => {
     ]);
   };
 
-  const handleUpdateForm = () => {
-    Alert.alert('Success', 'Form updated successfully!');
+  const handleUpdateForm = async () => {
+  if (!media) {
+    Alert.alert("Error", "Please select a media file first");
+    return;
+  }
+  setLoading(true)
+  try {
+    const result = await uploadLessonMedia(moduleID, lessonID, media);
+
+    setLoading(false)
+    Alert.alert("Success", "Lesson updated!");
+    console.log("Updated Lesson:", result);
+  } catch (error: any) {
+    console.log("Update Error:", error?.response?.data);
+    Alert.alert("Error", "Could not update lesson");
+  }
   };
 
   // ✅ Dynamic file preview
@@ -187,14 +209,15 @@ const pickDocumentsOrAudio = async () => {
 
   return (
     <SafeAreaView style={styles.container}>
-        <NavHead text="kkk"/>
+      <NavHead text={moduleTitle} />
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         
         <View style={styles.header}>
           
                 <View style={styles.header}>
-                  <Text style={{fontSize: 20, fontWeight: "700",}}>Lesson 1</Text>
+                  <Text style={{fontSize: 20, fontWeight: "700",}}>{lessonData.name}</Text>
                   <Text style={{ fontSize: 14, color: "#555", marginTop: 4, }}
                   >
                     Course type: <Text style={{textDecorationLine: "underline", color: "#000",}}>Self-paced</Text>
@@ -223,7 +246,13 @@ const pickDocumentsOrAudio = async () => {
             ) : (
               <View style={{gap: 8, alignItems: 'center'}}>
                 <Text style={styles.uploadIcon}>📁</Text>
+                {lessonData.media ? (
+                  
+                <Text style={styles.uploadSubtext}>{lessonData.media}</Text>
+                ) : (
+                  
                 <Text style={styles.uploadSubtext}>Videos, audio, images, documents</Text>
+                )}
               </View>
             )}
                 <Text style={styles.uploadText}>Upload media</Text>
@@ -233,7 +262,7 @@ const pickDocumentsOrAudio = async () => {
             onPress={handleUpdateForm}
             style={{marginTop: 25, width: "100%", height: 45, backgroundColor: colors.primary, borderRadius: 50, justifyContent: 'center', alignItems: 'center'}}
         >
-          <Text style={{color: colors.white}}>Save</Text>
+          <Text style={{color: colors.white}}>{loading ? "Saving...." : "Save"}</Text>
 
         </TouchableOpacity>
 {/* 

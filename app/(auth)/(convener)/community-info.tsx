@@ -7,6 +7,7 @@ import { Text } from '@/theme/theme';
 import { BackArrowIcon } from '@/assets/icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface FormData {
   name: string;
@@ -14,12 +15,12 @@ interface FormData {
 }
 const CommunityInfo = () => {
   const [data, setData] = useState<FormData>({name: "", url: ""})
-  const { token } = useLocalSearchParams<{ token: string }>()
   const router = useRouter()
   const apiURL = process.env.EXPO_PUBLIC_API_URL;
   
   const handleCohortCreate = async () => {
-  console.log("New: ", token)
+    const token = await AsyncStorage.getItem('authToken');
+    console.log("New: ", token)
     if (!token) {
       Alert.alert('Authentication Error', 'No auth token found. Please log in again.');
     }
@@ -38,12 +39,12 @@ const CommunityInfo = () => {
     console.log(response.data)
       router.navigate({
         pathname: '/(auth)/(convener)/more-info',
-        params: {cohort_id: response.data.cohort_id, token}
+        params: {cohort_id: response.data.cohort_id}
       })
       return response.data
     }
     catch (error) {
-      console.error('Error during login:', error);
+      console.error('Error during login:', error.response?.data);
     }
   }
   const handleUpdate = (field: keyof FormData, value: string) => {
@@ -78,9 +79,13 @@ const CommunityInfo = () => {
           </Text>
         </View>
         <View style={{ gap: 24 }}>
-          <Input value={data.name} onChangeText={(value: string) => handleUpdate("name", value)} label="Name your cohort" placeholder="Muhammad's Community" />
+          <Input 
+  value={data.name}
+  onChangeText={(value: string) => handleUpdate("name", value)} label="Name your cohort" placeholder="Muhammad's Community" />
           <View>
-            <Input value={data.url} onChangeText={(value: string) => handleUpdate("url", value)} label="Community URL" placeholder="muhammads-community" />
+            <Input 
+  value={data.url}
+  onChangeText={(value: string) => handleUpdate("url", value)} label="Community URL" placeholder="muhammads-community" />
             <Text style={{ fontSize: 12, color: '#999', paddingTop: 8 }}>
               We'll and the "/cohortz.com"
             </Text>
