@@ -23,19 +23,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDeleteCohort } from '@/api/cohorts/deleteCohort';
 
 const EditCohort = () => {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [name, setName] = useState("")
+  const [name, setName] = useState('');
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isDeleteCohortVisible, setDeleteCohortVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { data: cohort } = useGetCohort(id as any);
-  const updateCohort = useUpdateCohort()
-  const deleteCohort = useDeleteCohort()
+  const updateCohort = useUpdateCohort();
+  const deleteCohort = useDeleteCohort();
 
   const handleSheetChanges = useCallback((index: number) => {
     // Update state based on the index value
@@ -49,7 +49,7 @@ const EditCohort = () => {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
-    console.log(22)
+    console.log(22);
   };
 
   const renderBackdrop = useCallback(
@@ -66,33 +66,33 @@ const EditCohort = () => {
       return;
     }
 
-    const token = await AsyncStorage.getItem("authToken");
+    const token = await AsyncStorage.getItem('authToken');
     try {
       await updateCohort.mutateAsync({
         cohort_id: Number(id),
         token: String(token),
         data: {
-          name
-        }
+          name,
+        },
       });
-      
+
       Alert.alert('Success', 'Cohort info updated successfully');
       console.log('Updated name:', name);
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message || 'Update failed');
     }
-  }
+  };
 
   const handleDeleteCohort = async () => {
     try {
       await deleteCohort.mutateAsync(String(id));
       Alert.alert('Success', 'Cohort deleted successfully');
-      router.push("/convener-screens/(cohorts)")
+      router.push('/convener-screens/(cohorts)');
       // Navigate back or to another screen if necessary
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message || 'Delete failed');
     }
-  }
+  };
 
   const [activeTab, setActiveTab] = useState<'details' | 'members'>('details');
 
@@ -138,7 +138,12 @@ const EditCohort = () => {
       {activeTab === 'details' ? (
         <View style={{ flex: 1, paddingVertical: 16 }}>
           <View>
-            <Input value={name} onChangeText={setName} label="Cohort name" placeholder={cohort?.name} />
+            <Input
+              value={name}
+              onChangeText={setName}
+              label="Cohort name"
+              placeholder={cohort?.name}
+            />
           </View>
           <View
             style={{
@@ -255,7 +260,7 @@ const EditCohort = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              // onPress={() => router.push('/convener-screens/edit-cohort')}
+            // onPress={() => router.push('/convener-screens/edit-cohort')}
             >
               <Text>Remove learner</Text>
               <Text style={{ color: '#8D9091' }}>
@@ -459,7 +464,7 @@ const EditCohort = () => {
               <Text style={{ color: '#391D65' }}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-            onPress={handleDeleteCohort}
+              onPress={handleDeleteCohort}
               style={{
                 borderWidth: 1,
                 borderColor: '#F8F1FF',

@@ -81,7 +81,7 @@ const MoreInfo = () => {
 
   const updateCohort = useUpdateCohort();
   const router = useRouter();
-  const { cohort_id } = useLocalSearchParams()
+  const { cohort_id } = useLocalSearchParams();
 
   const handleNext = async () => {
     const token = await AsyncStorage.getItem('authToken');
@@ -99,7 +99,10 @@ const MoreInfo = () => {
 
       Alert.alert('Success', 'Cohort info updated successfully');
       // ✅ Navigate to next step
-      router.navigate({pathname: `/community-structure`, params: {cohort_id, token}});
+      router.navigate({
+        pathname: `/community-structure`,
+        params: { cohort_id, token },
+      });
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message || 'Update failed');
     }

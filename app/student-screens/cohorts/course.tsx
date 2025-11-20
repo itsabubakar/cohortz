@@ -15,7 +15,7 @@ import { CheckBox } from '@rneui/themed';
 const Course = () => {
   const [activeTab, setActiveTab] = useState('Home');
   const numbers = Array.from({ length: 20 }, (_, i) => i + 1);
-  const [module, setModule] = useState(1)
+  const [module, setModule] = useState(1);
   const [isSheetVisible, setSheetVisible] = useState(false);
 
   return (
@@ -101,26 +101,35 @@ const Course = () => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {numbers.map((num) => (
                     <TouchableOpacity
-                    onPress={() => setModule(num)}
+                      onPress={() => setModule(num)}
                       key={num}
                       style={[
-                        num === module && {backgroundColor: "purple"}, {
-                        flexDirection: 'row',
-                        gap: 4,
-                        borderWidth: 1,
-                        borderColor: '#DABCFF',
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        borderRadius: 12,
-                        marginRight: 8,
-                        marginTop: 8,
-                        minWidth: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }]}
+                        num === module && { backgroundColor: 'purple' },
+                        {
+                          flexDirection: 'row',
+                          gap: 4,
+                          borderWidth: 1,
+                          borderColor: '#DABCFF',
+                          paddingHorizontal: 8,
+                          paddingVertical: 4,
+                          borderRadius: 12,
+                          marginRight: 8,
+                          marginTop: 8,
+                          minWidth: 32,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        },
+                      ]}
                     >
-                      <Text style={[module === num && {color: "#DABCFF"}, { fontSize: 10 }]}>{num}</Text>
-                      <Check color="#DABCFF"/>
+                      <Text
+                        style={[
+                          module === num && { color: '#DABCFF' },
+                          { fontSize: 10 },
+                        ]}
+                      >
+                        {num}
+                      </Text>
+                      <Check color="#DABCFF" />
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -134,9 +143,7 @@ const Course = () => {
             </View>
           ) : (
             <View>
-              <View>
-                
-              </View>
+              <View></View>
               <Text style={{ fontWeight: 'bold' }}>Course Description</Text>
               <Text style={{ marginTop: 8, fontSize: 12, letterSpacing: 1 }}>
                 This course will teach you how to create high-fidelity designs
@@ -193,8 +200,8 @@ const Course = () => {
 
 const Module = () => {
   const router = useRouter();
-  const [checkedModule, setCheckedModule] = useState(false)
-  const [lessonStatus, setLessonStatus] = useState(false)
+  const [checkedModule, setCheckedModule] = useState(false);
+  const [lessonStatus, setLessonStatus] = useState(false);
   return (
     <TouchableOpacity
       onPress={() => router.push('/student-screens/cohorts/module')}
@@ -204,49 +211,49 @@ const Module = () => {
         borderWidth: 1,
         borderColor: '#ECDCFF',
         borderRadius: 8,
-        flexDirection: "row",
-        justifyContent: "space-between"
+        flexDirection: 'row',
+        justifyContent: 'space-between',
       }}
     >
       <View>
-        
-      <Text style={{ fontWeight: 'semibold' }}>Module enteries</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          gap: 8,
-          alignItems: 'center',
-          marginTop: 8,
-        }}
-      >
-        <Text
+        <Text style={{ fontWeight: 'semibold' }}>Module enteries</Text>
+        <View
           style={{
-            borderWidth: 1,
-            borderColor: '#ECDCFF',
-            padding: 4,
-            borderRadius: 4,
-            fontSize: 10,
+            flexDirection: 'row',
+            gap: 8,
+            alignItems: 'center',
+            marginTop: 8,
           }}
         >
-          Video
-        </Text>
-        <Text
-          style={{
-            borderWidth: 1,
-            borderColor: '#ECDCFF',
-            padding: 4,
-            borderRadius: 4,
-            fontSize: 10,
-          }}
-        >
-          2 min
-        </Text>
-      </View>
+          <Text
+            style={{
+              borderWidth: 1,
+              borderColor: '#ECDCFF',
+              padding: 4,
+              borderRadius: 4,
+              fontSize: 10,
+            }}
+          >
+            Video
+          </Text>
+          <Text
+            style={{
+              borderWidth: 1,
+              borderColor: '#ECDCFF',
+              padding: 4,
+              borderRadius: 4,
+              fontSize: 10,
+            }}
+          >
+            2 min
+          </Text>
+        </View>
       </View>
 
       <CheckBox
         checked={checkedModule}
-      onPress={()=> setCheckedModule(!checkedModule)}/>
+        onPress={() => setCheckedModule(!checkedModule)}
+      />
     </TouchableOpacity>
   );
 };

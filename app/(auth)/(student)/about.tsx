@@ -43,36 +43,36 @@ const About = () => {
     lastName: 'oipj',
     username: 'hamid',
     password: 'password',
-    location: "",
-    socials: "",
-    bio: "",
+    location: '',
+    socials: '',
+    bio: '',
   });
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const token = useLocalSearchParams().token as string
+  const token = useLocalSearchParams().token as string;
   const apiURL = process.env.EXPO_PUBLIC_API_URL as string;
   const router = useRouter();
 
   useEffect(() => {
-    const changes = 
-      data.firstName !== '' || 
-      data.lastName !== ''
-    
+    const changes = data.firstName !== '' || data.lastName !== '';
+
     setHasChanges(changes);
   }, [data.firstName, data.lastName]);
 
   const handleUpdate = (field: keyof FormData, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData((prev) => ({ ...prev, [field]: value }));
   };
 
-
   const handleSave = async () => {
-    console.log(token)
+    console.log(token);
     if (!isChecked) {
-      Alert.alert('Terms Required', 'Please agree to the terms before continuing.');
+      Alert.alert(
+        'Terms Required',
+        'Please agree to the terms before continuing.',
+      );
       return;
     }
     setLoading(true);
@@ -82,7 +82,6 @@ const About = () => {
       formData.append('first_name', data.firstName);
       formData.append('last_name', data.lastName);
 
-
       const response: AxiosResponse<UpdateProfileResponse> = await axios.put(
         `${apiURL}/v1/api/profile`,
         formData,
@@ -91,30 +90,32 @@ const About = () => {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.error) {
-        Alert.alert('Update Failed', JSON.stringify(response.data.message, null, 2));
+        Alert.alert(
+          'Update Failed',
+          JSON.stringify(response.data.message, null, 2),
+        );
       } else {
         Alert.alert('Success', 'Profile updated successfully!');
         router.navigate({
           pathname: '/(student)/personal-info',
-          params: {token: token}
-        })
+          params: { token: token },
+        });
       }
     } catch (error: any) {
       console.error('Update Error:', error.response || error);
       Alert.alert(
         'Error',
-        error?.response?.data?.message || 'Something went wrong while updating your profile.'
+        error?.response?.data?.message ||
+          'Something went wrong while updating your profile.',
       );
     } finally {
       setLoading(false);
     }
   };
-
-      
 
   return (
     <SafeAreaWrapper>
@@ -128,7 +129,7 @@ const About = () => {
             label="First Name"
             placeholder="First name"
             value={data.firstName}
-            onChangeText={(value:string) => handleUpdate('firstName', value)}
+            onChangeText={(value: string) => handleUpdate('firstName', value)}
           />
           <Input
             label="Last Name"
@@ -141,11 +142,10 @@ const About = () => {
         <View style={styles.checkboxContainer}>
           <CustomCheckbox
             checked={isChecked}
-            onToggle={() => setIsChecked(prev => !prev)}
+            onToggle={() => setIsChecked((prev) => !prev)}
           />
           <Text>
-            I agree to the{' '}
-            <Text style={styles.linkText}>terms</Text> and{' '}
+            I agree to the <Text style={styles.linkText}>terms</Text> and{' '}
             <Text style={styles.linkText}>privacy policy</Text>.
           </Text>
         </View>

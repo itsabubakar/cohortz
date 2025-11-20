@@ -41,8 +41,8 @@ export default function InitialScreen() {
 
   // Show a loading indicator while deciding where to route the user
   return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" />
+    </View>
   );
 }

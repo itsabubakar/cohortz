@@ -205,7 +205,6 @@ const pickDocumentsOrAudio = async () => {
         );
     }
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <NavHead text={moduleTitle} />

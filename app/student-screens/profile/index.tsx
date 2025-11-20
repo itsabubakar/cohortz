@@ -24,19 +24,34 @@ import { Image, ActivityIndicator } from 'react-native';
 import { useProfile } from '@/hooks/api/useProfileHook';
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = React.useState<'Communities' | 'Social'>('Communities');
-  
+  const [activeTab, setActiveTab] = React.useState<'Communities' | 'Social'>(
+    'Communities',
+  );
+
   // Use React Query instead of useState + useEffect
   const { data: profile, isLoading, error } = useProfile();
-  
+
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const Community = () => {
     return (
       <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
-        <View style={{ backgroundColor: '#F2750D', width: 40, height: 40, borderRadius: 8 }} />
+        <View
+          style={{
+            backgroundColor: '#F2750D',
+            width: 40,
+            height: 40,
+            borderRadius: 8,
+          }}
+        />
         <View>
-          <Text style={{ fontFamily: 'DMSansMedium', fontSize: 12, color: '#1F1F1F' }}>
+          <Text
+            style={{
+              fontFamily: 'DMSansMedium',
+              fontSize: 12,
+              color: '#1F1F1F',
+            }}
+          >
             Branding & Brand Design
           </Text>
           <Text style={{ color: '#8D9091', fontSize: 10 }}>15.8K Members</Text>
@@ -50,10 +65,10 @@ const Profile = () => {
   };
 
   const renderBackdrop = useCallback(
-    (props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
-      <BottomSheetBackdrop {...props} opacity={0.7} />
-    ),
-    []
+    (
+      props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps,
+    ) => <BottomSheetBackdrop {...props} opacity={0.7} />,
+    [],
   );
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -113,7 +128,9 @@ const Profile = () => {
 
           <View style={styles.infoRow}>
             <Location />
-            <Text style={styles.infoText}>{profile?.location || 'No location set'}</Text>
+            <Text style={styles.infoText}>
+              {profile?.location || 'No location set'}
+            </Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -145,7 +162,12 @@ const Profile = () => {
             onPress={() => setActiveTab(tab as 'Communities' | 'Social')}
             style={styles.tabButton}
           >
-            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab && styles.activeTabText,
+              ]}
+            >
               {tab}
             </Text>
             {activeTab === tab && <View style={styles.activeTabUnderline} />}
@@ -163,27 +185,59 @@ const Profile = () => {
           </View>
         ) : (
           <View style={{ gap: 16 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+            >
               <X />
-              <Text style={{ color: '#1F1F1F', fontSize: 10, fontFamily: 'DMSansRegular' }}>
+              <Text
+                style={{
+                  color: '#1F1F1F',
+                  fontSize: 10,
+                  fontFamily: 'DMSansRegular',
+                }}
+              >
                 {profile?.socials || 'copywritingprompts.com'}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+            >
               <Facebook />
-              <Text style={{ color: '#1F1F1F', fontSize: 10, fontFamily: 'DMSansRegular' }}>
+              <Text
+                style={{
+                  color: '#1F1F1F',
+                  fontSize: 10,
+                  fontFamily: 'DMSansRegular',
+                }}
+              >
                 {profile?.socials || 'copywritingprompts.com'}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+            >
               <Instagram />
-              <Text style={{ color: '#1F1F1F', fontSize: 10, fontFamily: 'DMSansRegular' }}>
+              <Text
+                style={{
+                  color: '#1F1F1F',
+                  fontSize: 10,
+                  fontFamily: 'DMSansRegular',
+                }}
+              >
                 {profile?.socials || 'copywritingprompts.com'}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+            >
               <Linkedin />
-              <Text style={{ color: '#1F1F1F', fontSize: 10, fontFamily: 'DMSansRegular' }}>
+              <Text
+                style={{
+                  color: '#1F1F1F',
+                  fontSize: 10,
+                  fontFamily: 'DMSansRegular',
+                }}
+              >
                 {profile?.socials || 'copywritingprompts.com'}
               </Text>
             </View>
@@ -202,7 +256,9 @@ const Profile = () => {
         <BottomSheetView style={styles.contentContainer}>
           <View style={{ marginTop: 24, flex: 1, gap: 16 }}>
             <Pressable
-              onPress={() => router.push('/student-screens/profile/edit-profile')}
+              onPress={() =>
+                router.push('/student-screens/profile/edit-profile')
+              }
               style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}
             >
               <Pencil />
@@ -210,20 +266,33 @@ const Profile = () => {
                 Edit profile
               </Text>
             </Pressable>
-            <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <Pressable
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}
+            >
               <Notifications />
               <Text style={{ color: '#1F1F1F', fontFamily: 'DMSansRegular' }}>
                 Cohort notifications
               </Text>
             </Pressable>
-            <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <Pressable
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}
+            >
               <Lock />
               <Text style={{ color: '#1F1F1F', fontFamily: 'DMSansRegular' }}>
                 Account authentication
               </Text>
             </Pressable>
-            <Pressable style={{ marginTop: 'auto', paddingVertical: 16, borderTopWidth: 1, borderTopColor: '#EFEFEF' }}>
-              <Text style={{ color: '#1F1F1F', fontFamily: 'DMSansRegular' }}>Sign out</Text>
+            <Pressable
+              style={{
+                marginTop: 'auto',
+                paddingVertical: 16,
+                borderTopWidth: 1,
+                borderTopColor: '#EFEFEF',
+              }}
+            >
+              <Text style={{ color: '#1F1F1F', fontFamily: 'DMSansRegular' }}>
+                Sign out
+              </Text>
             </Pressable>
           </View>
         </BottomSheetView>

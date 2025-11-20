@@ -1,4 +1,10 @@
-import { Alert, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaWrapper } from '@/HOC';
 import { Header } from '@/ui';
@@ -11,32 +17,35 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Structure = () => {
   const [selected, setSelected] = useState<string | null>(null);
-  const {cohort_id} = useLocalSearchParams<{cohort_id: string, token: string}>();
+  const { cohort_id } = useLocalSearchParams<{
+    cohort_id: string;
+    token: string;
+  }>();
   const updateCohort = useUpdateCohort();
   const router = useRouter();
 
   const handleSelected = (value: string) => {
-    setSelected(prev => (prev === value ? null : value));
+    setSelected((prev) => (prev === value ? null : value));
   };
 
-    const handleSave = async () => {
-      const token = await AsyncStorage.getItem('authToken');
-      try {
-        await updateCohort.mutateAsync({
-          cohort_id: Number(cohort_id),
-          token: String(token),
-          data: {
-            community_structure: selected ?? undefined, // will be set on next screen
-          },
-        });
-        console.log("Saved community structure:", selected);
-        Alert.alert('Success', 'Cohort info updated successfully');
-        // ✅ Navigate to next step
-        router.push(`/(auth)/login`);
-      } catch (err: any) {
-        Alert.alert('Error', err?.response?.data?.message || 'Update failed');
-      }
-    };
+  const handleSave = async () => {
+    const token = await AsyncStorage.getItem('authToken');
+    try {
+      await updateCohort.mutateAsync({
+        cohort_id: Number(cohort_id),
+        token: String(token),
+        data: {
+          community_structure: selected ?? undefined, // will be set on next screen
+        },
+      });
+      console.log('Saved community structure:', selected);
+      Alert.alert('Success', 'Cohort info updated successfully');
+      // ✅ Navigate to next step
+      router.push(`/(auth)/login`);
+    } catch (err: any) {
+      Alert.alert('Error', err?.response?.data?.message || 'Update failed');
+    }
+  };
 
   return (
     <SafeAreaWrapper>
@@ -105,8 +114,15 @@ const Structure = () => {
           <Text style={{ color: '#fff' }}>next</Text>
         </Pressable>
       </Link>
-      <View style={{marginTop: "auto", marginBottom: 20, flexDirection: 'row', justifyContent: "flex-end", gap: 16 }}>
-        
+      <View
+        style={{
+          marginTop: 'auto',
+          marginBottom: 20,
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          gap: 16,
+        }}
+      >
         <Pressable style={styles.backButton}>
           <Text style={{ color: '#391D65' }}>Skip</Text>
         </Pressable>
@@ -161,8 +177,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     justifyContent: 'center',
-    borderWidth:1,
-    borderRadius:8,
-    borderColor: colors.purpleShade
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: colors.purpleShade,
   },
 });

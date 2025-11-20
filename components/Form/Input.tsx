@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 
 const NormalInput = ({ label, placeholder, value, onChangeText }: any) => {
-
   return (
     <View>
       {label && <Text style={styles.label}>{label}</Text>}

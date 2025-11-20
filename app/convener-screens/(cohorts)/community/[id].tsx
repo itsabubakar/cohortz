@@ -10,136 +10,145 @@ import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typesc
 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Switch, TextInput, TouchableOpacity } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Switch,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { Text, View } from 'react-native';
 import Modal from 'react-native-modal';
-import { X } from "lucide-react-native";
+import { X } from 'lucide-react-native';
 import { combine } from 'zustand/middleware';
 import { usePostCommunity } from '@/api/communities/postCommunity';
 import { CommunityType } from '@/api/communities/postCommunity';
 import useGetCommunities from '@/api/communities/getCommunities';
 
-  interface CreateCommunityHandlerOptions {
-    onSuccess?: (data: any) => void;
-    onError?: (error: unknown) => void;
-  }
-    interface CreateCommunityPayload {
-      cohort_id: number;
-      name: string;
-      description: string;
-      sub_type: string;
-      // sub_type?: string;
-    }
+interface CreateCommunityHandlerOptions {
+  onSuccess?: (data: any) => void;
+  onError?: (error: unknown) => void;
+}
+interface CreateCommunityPayload {
+  cohort_id: number;
+  name: string;
+  description: string;
+  sub_type: string;
+  // sub_type?: string;
+}
 
-    interface CommunityResponse {
-      id: number;
-      name: string;
-      description: string;
-      sub_type: string;
-      // Add other fields as returned by the API
-    }
+interface CommunityResponse {
+  id: number;
+  name: string;
+  description: string;
+  sub_type: string;
+  // Add other fields as returned by the API
+}
 
 type Props = {};
-    const courseOptions = [
-    {
-      key: "self_paced",
-      title: "Self-paced",
-      description: "Learners can start immediately and learn at their own pace",
-    },
-    {
-      key: "structured",
-      title: "Structured",
-      description: "Learning follows a structured, guided path with milestones",
-    },
-    {
-      key: "scheduled",
-      title: "Scheduled",
-      description: "Courses run on a set schedule with live sessions",
-    },
-    ];
-        const getButtonStyle = (isActive: any) => ({
-    width: 270, // fallback for string percentage, but better to use number below
-    marginTop: 20,
-    borderWidth: 1,
-    backgroundColor: isActive ? "#EDE9FE" : "white",
-    padding: 12,
-    borderRadius: 8,
-    borderColor: isActive ? "#391D65" : "black",
-    });
+const courseOptions = [
+  {
+    key: 'self_paced',
+    title: 'Self-paced',
+    description: 'Learners can start immediately and learn at their own pace',
+  },
+  {
+    key: 'structured',
+    title: 'Structured',
+    description: 'Learning follows a structured, guided path with milestones',
+  },
+  {
+    key: 'scheduled',
+    title: 'Scheduled',
+    description: 'Courses run on a set schedule with live sessions',
+  },
+];
+const getButtonStyle = (isActive: any) => ({
+  width: 270, // fallback for string percentage, but better to use number below
+  marginTop: 20,
+  borderWidth: 1,
+  backgroundColor: isActive ? '#EDE9FE' : 'white',
+  padding: 12,
+  borderRadius: 8,
+  borderColor: isActive ? '#391D65' : 'black',
+});
 const Index = (props: Props) => {
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    sub_type: "",
+    name: '',
+    description: '',
+    sub_type: '',
   });
 
-  const [courseType, setCourseType] = useState("self-paced")
-  const [nextModal, setNextModal] = useState(false)
+  const [courseType, setCourseType] = useState('self-paced');
+  const [nextModal, setNextModal] = useState(false);
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
   const [lessons, setLessons] = useState([]);
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const [cohortGroup, setCohortGroup] = useState("Branding & Branding Design");
+  const [cohortGroup, setCohortGroup] = useState('Branding & Branding Design');
   const [communityAccess, setCommunityAccess] = useState(false);
   const { id } = useLocalSearchParams<{ id: string }>(); // cohort id
   const numericId = Number(id);
 
-  const apiURL = process.env.EXPO_PUBLIC_API_URL as string
+  const apiURL = process.env.EXPO_PUBLIC_API_URL as string;
 
   console.log(apiURL);
-  const { mutate: createCommunity} = usePostCommunity(numericId)
-  const { data: communities = [] } = useGetCommunities(numericId)
+  const { mutate: createCommunity } = usePostCommunity(numericId);
+  const { data: communities = [] } = useGetCommunities(numericId);
   const handleStep = () => {
-    setStep(step + 1)
-  }
+    setStep(step + 1);
+  };
 
-  console.log("Sol", communities)
+  console.log('Sol', communities);
 
   const createCommunityHandler = () => {
     // Validate required fields
-    if (!formData.name.trim() || !formData.description.trim() || !formData.sub_type.trim()) {
-        alert('Please fill in all required fields');
-        return;
+    if (
+      !formData.name.trim() ||
+      !formData.description.trim() ||
+      !formData.sub_type.trim()
+    ) {
+      alert('Please fill in all required fields');
+      return;
     }
 
     const payload: CreateCommunityPayload = {
-        cohort_id: numericId,
-        name: formData.name,
-        description: formData.description,
-        sub_type: formData.sub_type,
-        // Remove sub_type from payload
+      cohort_id: numericId,
+      name: formData.name,
+      description: formData.description,
+      sub_type: formData.sub_type,
+      // Remove sub_type from payload
     };
 
     createCommunity(payload, {
       onSuccess: (data: any) => {
-          console.log("Community created successfully:", data);
-          // Close modal and reset form
-          setModalVisible(false);
-          setFormData({
-              name: "",
-              description: "",
-              sub_type: "structured",
-          });
-          setStep(1);
-          // Optionally refresh communities list or navigate
-          alert('Community created successfully!');
+        console.log('Community created successfully:', data);
+        // Close modal and reset form
+        setModalVisible(false);
+        setFormData({
+          name: '',
+          description: '',
+          sub_type: 'structured',
+        });
+        setStep(1);
+        // Optionally refresh communities list or navigate
+        alert('Community created successfully!');
       },
       onError: (error: any) => {
-          console.error("Error creating community:", error);
-          // Show specific error message if available
-          const errorMessage = error.response?.data?.message || 'Failed to create community';
-          alert(`Error: ${errorMessage}`);
-      }
+        console.error('Error creating community:', error);
+        // Show specific error message if available
+        const errorMessage =
+          error.response?.data?.message || 'Failed to create community';
+        alert(`Error: ${errorMessage}`);
+      },
     });
-  }
-
-
+  };
 
   const handleSheetChanges = useCallback((index: number) => {
-  // Update state based on the index value
-  console.log(index);
-  // If index is greater than -1, sheet is active
+    // Update state based on the index value
+    console.log(index);
+    // If index is greater than -1, sheet is active
   }, []);
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -184,9 +193,8 @@ const Index = (props: Props) => {
           contentContainerStyle={{ paddingVertical: 16, gap: 16 }}
           showsVerticalScrollIndicator={false}
         >
-          {communities.map((community:CommunityType) => (
-            <Community
-             {...community} onOpenBottomSheet={openBottomSheet}/>
+          {communities.map((community: CommunityType) => (
+            <Community {...community} onOpenBottomSheet={openBottomSheet} />
           ))}
           <TouchableOpacity
             style={{
@@ -218,7 +226,8 @@ const Index = (props: Props) => {
             No communities yet
           </Text>
           <Text style={{ color: '#1F1F1F', textAlign: 'center', fontSize: 14 }}>
-            Create communities and let the discussion begin. Create communities for different topics to help members connect and engage.
+            Create communities and let the discussion begin. Create communities
+            for different topics to help members connect and engage.
           </Text>
           <TouchableOpacity
             style={{
@@ -241,33 +250,35 @@ const Index = (props: Props) => {
       )}
 
       <Modal isVisible={isModalVisible}>
-          <View
+        <View
+          style={{
+            backgroundColor: 'white',
+            // height: 500,
+            paddingBottom: 40,
+            padding: 16,
+            borderRadius: 8,
+            alignItems: 'center',
+          }}
+        >
+          <TouchableOpacity
+            onPress={toggleModal}
+            style={{ alignItems: 'flex-end' }}
+          >
+            <Close />
+          </TouchableOpacity>
+          <Text
             style={{
-              backgroundColor: 'white',
-              // height: 500,
-              paddingBottom: 40,
-              padding: 16,
-              borderRadius: 8,
-              alignItems: "center"
+              color: '#1F1F1F',
+              fontFamily: 'DMSansSemiBold',
+              fontSize: 20,
+              textAlign: 'center',
             }}
           >
-            <TouchableOpacity
-              onPress={toggleModal}
-              style={{ alignItems: 'flex-end' }}
-            >
-              <Close />
-            </TouchableOpacity>
-            <Text
-              style={{
-                color: '#1F1F1F',
-                fontFamily: 'DMSansSemiBold',
-                fontSize: 20,
-                textAlign: 'center',
-              }}
-            >
-              {step === 1 ? "Choose community Type" : "Choose community structure"}
-              </Text>
-              {/* {step == 1 && (
+            {step === 1
+              ? 'Choose community Type'
+              : 'Choose community structure'}
+          </Text>
+          {/* {step == 1 && (
                 <ScrollView>
                 
                   <View style={{ gap: 16, marginTop: 26 }}>
@@ -278,57 +289,62 @@ const Index = (props: Props) => {
                   </View>
                 </ScrollView>
               )} */}
-            {step === 1 && (
-                <View
-                  style={{}}>
-                    <View style={{
-                        backgroundColor: "#fff",
-                        borderRadius: 12,
-                        }}>
-                            {courseOptions.map((option) => {
-                              const isActive = formData.sub_type === option.key;
-                              return (
-                                <TouchableOpacity
-                                  key={option.key}
-                                  
-                                  onPress={() => setFormData({...formData, sub_type: option.key})}
-                                  style={getButtonStyle(isActive)}
-                                >
-                                  <Text style={{ fontSize: 18 }}>{option.title}</Text>
-                                  <Text style={{ color: "#6B7280", marginTop: 5 }}>
-                                    {option.description}
-                                  </Text>
-                                </TouchableOpacity>
-                              );
-                            })}
-                            
-                    </View>
-                </View>
-            )}
-            {step === 2 && (
-              <ScrollView contentContainerStyle={styles.container}>
-                {/* Course name */}
-                <Text style={styles.label}>Course name</Text>
-                <TextInput
-                  placeholder="Your course name"
-                  value={formData.name}
-                  onChangeText={(text) => setFormData({...formData, name: text})}
-                  style={styles.input}
-                  placeholderTextColor="#888"
-                />
+          {step === 1 && (
+            <View style={{}}>
+              <View
+                style={{
+                  backgroundColor: '#fff',
+                  borderRadius: 12,
+                }}
+              >
+                {courseOptions.map((option) => {
+                  const isActive = formData.sub_type === option.key;
+                  return (
+                    <TouchableOpacity
+                      key={option.key}
+                      onPress={() =>
+                        setFormData({ ...formData, sub_type: option.key })
+                      }
+                      style={getButtonStyle(isActive)}
+                    >
+                      <Text style={{ fontSize: 18 }}>{option.title}</Text>
+                      <Text style={{ color: '#6B7280', marginTop: 5 }}>
+                        {option.description}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+          {step === 2 && (
+            <ScrollView contentContainerStyle={styles.container}>
+              {/* Course name */}
+              <Text style={styles.label}>Course name</Text>
+              <TextInput
+                placeholder="Your course name"
+                value={formData.name}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, name: text })
+                }
+                style={styles.input}
+                placeholderTextColor="#888"
+              />
 
-                {/* Cohort Description */}
-                <Text style={styles.label}>Cohort Description</Text>
-                <TextInput
-                  placeholder="Describe what your cohort is about..."
-                  style={[styles.input, styles.textarea]}
-                  placeholderTextColor="#888"
-        value={formData.description}
-        onChangeText={(text) => setFormData({...formData, description: text})}
-                  multiline
-                />
+              {/* Cohort Description */}
+              <Text style={styles.label}>Cohort Description</Text>
+              <TextInput
+                placeholder="Describe what your cohort is about..."
+                style={[styles.input, styles.textarea]}
+                placeholderTextColor="#888"
+                value={formData.description}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, description: text })
+                }
+                multiline
+              />
 
-                {/* Cohort group
+              {/* Cohort group
                 <Text style={styles.label}>Cohort group</Text>
                 <View style={styles.pickerWrapper}>
                   <Picker
@@ -344,47 +360,45 @@ const Index = (props: Props) => {
                   </Picker>
                 </View> */}
 
-                {/* Community Access */}
-                <View style={styles.switchRow}>
-                  <Text style={styles.label}>Community access</Text>
-                  <Switch
-                    value={communityAccess}
-                    onValueChange={setCommunityAccess}
-                    thumbColor={"#f4f3f4"}
-                    trackColor={{ false: "#d3d3d3", true: "#B085EF" }}
-                  />
-                </View>
+              {/* Community Access */}
+              <View style={styles.switchRow}>
+                <Text style={styles.label}>Community access</Text>
+                <Switch
+                  value={communityAccess}
+                  onValueChange={setCommunityAccess}
+                  thumbColor={'#f4f3f4'}
+                  trackColor={{ false: '#d3d3d3', true: '#B085EF' }}
+                />
+              </View>
 
-                <Text style={styles.hint}>
-                  Add members from this cohort
-                </Text>
+              <Text style={styles.hint}>Add members from this cohort</Text>
 
-                {/* Info text */}
-                <Text style={styles.info}>
-                  The Community will be created in draft mode and will not be visible to your learners.
-                  You can update access settings after you create the community.
-                </Text>
-              </ScrollView>
-            )}
-                <View style={{ alignItems: 'center' }}>
-                  <TouchableOpacity
-                    style={{
-                      borderWidth: 1,
-                      borderColor: '#F8F1FF',
-                      paddingVertical: 14,
-                      alignItems: 'center',
-                      borderRadius: 32,
-                      marginTop: 32,
-                      backgroundColor: '#391D65',
-                      width: '70%',
-                    }}
-                    onPress={step < 2 ? handleStep : createCommunityHandler}
-                  >
-                    <Text style={{ color: '#fff' }}>Next</Text>
-                  </TouchableOpacity>
-                </View>
+              {/* Info text */}
+              <Text style={styles.info}>
+                The Community will be created in draft mode and will not be
+                visible to your learners. You can update access settings after
+                you create the community.
+              </Text>
+            </ScrollView>
+          )}
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                borderColor: '#F8F1FF',
+                paddingVertical: 14,
+                alignItems: 'center',
+                borderRadius: 32,
+                marginTop: 32,
+                backgroundColor: '#391D65',
+                width: '70%',
+              }}
+              onPress={step < 2 ? handleStep : createCommunityHandler}
+            >
+              <Text style={{ color: '#fff' }}>Next</Text>
+            </TouchableOpacity>
           </View>
-          
+        </View>
       </Modal>
       {/* <Modal isVisible={typeModal}>
             <View
@@ -435,7 +449,7 @@ const Index = (props: Props) => {
             }}
           >
             <TouchableOpacity
-              // onPress={() => router.push('/convener-screens/edit-cohort')}s
+            // onPress={() => router.push('/convener-screens/edit-cohort')}s
             >
               <Text>Edit lesson</Text>
             </TouchableOpacity>
@@ -443,12 +457,12 @@ const Index = (props: Props) => {
               <Text>View as a student</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              // onPress={() => router.push('/convener-screens/edit-cohort')}s
+            // onPress={() => router.push('/convener-screens/edit-cohort')}s
             >
               <Text>Unpublish lesson</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              // onPress={() => router.push('/convener-screens/edit-cohort')}s
+            // onPress={() => router.push('/convener-screens/edit-cohort')}s
             >
               <Text>Delete lesson</Text>
             </TouchableOpacity>
@@ -461,18 +475,19 @@ const Index = (props: Props) => {
 
 export default Index;
 
-
 type LessonProps = CommunityType & { onOpenBottomSheet: () => void };
 
-const Community  = ({ id, cohort_id, name, onOpenBottomSheet }: LessonProps) => {
+const Community = ({ id, cohort_id, name, onOpenBottomSheet }: LessonProps) => {
   const router = useRouter();
   return (
     <TouchableOpacity
-    key={id}
-      onPress={() => router.navigate({
-        pathname: '/convener-screens/community/(course)/[id]',
-        params: {id, cohort_id}
-      })}
+      key={id}
+      onPress={() =>
+        router.navigate({
+          pathname: '/convener-screens/community/(course)/[id]',
+          params: { id, cohort_id },
+        })
+      }
       style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}
     >
       <View style={styles.profileImage} />
@@ -524,52 +539,52 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  
+
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 6,
     marginTop: 16,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 10,
     padding: 12,
     fontSize: 14,
-    color: "#000",
+    color: '#000',
   },
   textarea: {
     height: 100,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   picker: {
     height: 50,
   },
   switchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 24,
   },
   hint: {
     fontSize: 12,
-    color: "#777",
+    color: '#777',
     marginTop: 4,
   },
   info: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
     marginTop: 20,
     lineHeight: 18,
   },
