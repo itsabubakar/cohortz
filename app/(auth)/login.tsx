@@ -67,7 +67,7 @@ const LoginScreen = (props: Props) => {
 
         // Navigate to onboarding with token
         router.replace({
-          pathname: '/convener-screens/(cohorts)',
+          pathname: '/student-screens/cohorts',
           params: { token: result.token },
         });
       } else {

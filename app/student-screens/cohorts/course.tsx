@@ -11,12 +11,16 @@ import { Back, Check, Close, Options, RedDoor } from '@/assets/icons';
 import { router, useRouter } from 'expo-router';
 import { BottomSheet } from '@/components/ui';
 import { CheckBox } from '@rneui/themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Course = () => {
   const [activeTab, setActiveTab] = useState('Home');
   const numbers = Array.from({ length: 20 }, (_, i) => i + 1);
   const [module, setModule] = useState(1);
   const [isSheetVisible, setSheetVisible] = useState(false);
+  const getCommunityID = async () => {
+    console.log(await AsyncStorage.getItem("communityID"))
+  }
 
   return (
     <SafeAreaWrapper>
@@ -49,7 +53,7 @@ const Course = () => {
         >
           Name of Cohort
         </Text>
-        <Text>Name of Convener</Text>
+        <Text onPress={getCommunityID}>Name of Convener</Text>
       </View>
       <View style={{ flex: 1 }}>
         {/* Tab Bar */}
