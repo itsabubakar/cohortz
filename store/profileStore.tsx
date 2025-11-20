@@ -12,14 +12,16 @@ interface ProfileState {
   profileImage: string;
   isLoading: boolean;
   error: string | null;
-  setProfile: (profile: Partial<{
-    firstName: string;
-    lastName: string;
-    username: string;
-    location: string;
-    socials: string;
-    profileImage: string;
-  }>) => void;
+  setProfile: (
+    profile: Partial<{
+      firstName: string;
+      lastName: string;
+      username: string;
+      location: string;
+      socials: string;
+      profileImage: string;
+    }>,
+  ) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
@@ -41,14 +43,15 @@ export const useProfileStore = create<ProfileState>()(
       setLoading: (loading) => set({ isLoading: loading }),
       setError: (error) => set({ error }),
       clearError: () => set({ error: null }),
-      clearProfile: () => set({
-        firstName: '',
-        lastName: '',
-        username: '',
-        location: '',
-        socials: '',
-        profileImage: '',
-      }),
+      clearProfile: () =>
+        set({
+          firstName: '',
+          lastName: '',
+          username: '',
+          location: '',
+          socials: '',
+          profileImage: '',
+        }),
     }),
     {
       name: 'profile-storage',
@@ -61,6 +64,6 @@ export const useProfileStore = create<ProfileState>()(
         socials: state.socials,
         profileImage: state.profileImage,
       }),
-    }
-  )
+    },
+  ),
 );

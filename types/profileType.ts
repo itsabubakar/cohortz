@@ -8,4 +8,4 @@ interface ProfileProp {
   image?: any;
 }
 
-export default ProfileProp
+export default ProfileProp;

@@ -31,7 +31,7 @@ export const useUpdateCohort = () => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        }
+        },
       );
       return res.data;
     },

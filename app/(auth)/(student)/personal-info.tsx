@@ -68,21 +68,22 @@ const CommunityInfo = () => {
       const response = await axiosInstance.put<UpdateProfileResponse>(
         '/v1/api/profile',
         updateData,
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' } },
       );
 
       if (response.data.error) {
-        Alert.alert('Update Failed', 'Failed to update profile. Please try again.');
+        Alert.alert(
+          'Update Failed',
+          'Failed to update profile. Please try again.',
+        );
       } else {
         Alert.alert('Success', 'Profile updated successfully!');
         router.push(`/(auth)/login`);
       }
     } catch (error: any) {
       console.error('Update Error:', error);
-      const message =
-        error.response?.data?.message
-        error.message ||
-        'Something went wrong while updating your profile.';
+      const message = error.response?.data?.message;
+      error.message || 'Something went wrong while updating your profile.';
       Alert.alert('Error', message);
     } finally {
       setLoading(false);

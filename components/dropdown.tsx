@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 type DropdownOption = {
   label: string;
@@ -41,7 +36,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange }) => {
     return status === 'published' ? '#ECFDF5' : '#F3F4F6';
   };
 
-  const selectedOption = options.find(opt => opt.value === value);
+  const selectedOption = options.find((opt) => opt.value === value);
 
   return (
     <View style={styles.container}>

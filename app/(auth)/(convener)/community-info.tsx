@@ -14,41 +14,46 @@ interface FormData {
   url: string;
 }
 const CommunityInfo = () => {
-  const [data, setData] = useState<FormData>({name: "", url: ""})
-  const router = useRouter()
+  const [data, setData] = useState<FormData>({ name: '', url: '' });
+  const router = useRouter();
   const apiURL = process.env.EXPO_PUBLIC_API_URL;
-  
+
   const handleCohortCreate = async () => {
     const token = await AsyncStorage.getItem('authToken');
-    console.log("New: ", token)
+    console.log('New: ', token);
     if (!token) {
-      Alert.alert('Authentication Error', 'No auth token found. Please log in again.');
+      Alert.alert(
+        'Authentication Error',
+        'No auth token found. Please log in again.',
+      );
     }
     // Handle community creation logic here
     try {
-      const response = await axios.post(`${apiURL}/v1/api/cohorts`, {
-        name: data.name,
-        url: data.url
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-    }
-    );
-    console.log(response.data)
+      const response = await axios.post(
+        `${apiURL}/v1/api/cohorts`,
+        {
+          name: data.name,
+          url: data.url,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      console.log(response.data);
       router.navigate({
         pathname: '/(auth)/(convener)/more-info',
-        params: {cohort_id: response.data.cohort_id}
-      })
-      return response.data
-    }
-    catch (error) {
+        params: { cohort_id: response.data.cohort_id },
+      });
+      return response.data;
+    } catch (error) {
       console.error('Error during login:', error.response?.data);
     }
-  }
+  };
   const handleUpdate = (field: keyof FormData, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData((prev) => ({ ...prev, [field]: value }));
   };
   return (
     <SafeAreaWrapper>
@@ -79,13 +84,19 @@ const CommunityInfo = () => {
           </Text>
         </View>
         <View style={{ gap: 24 }}>
-          <Input 
-  value={data.name}
-  onChangeText={(value: string) => handleUpdate("name", value)} label="Name your cohort" placeholder="Muhammad's Community" />
+          <Input
+            value={data.name}
+            onChangeText={(value: string) => handleUpdate('name', value)}
+            label="Name your cohort"
+            placeholder="Muhammad's Community"
+          />
           <View>
-            <Input 
-  value={data.url}
-  onChangeText={(value: string) => handleUpdate("url", value)} label="Community URL" placeholder="muhammads-community" />
+            <Input
+              value={data.url}
+              onChangeText={(value: string) => handleUpdate('url', value)}
+              label="Community URL"
+              placeholder="muhammads-community"
+            />
             <Text style={{ fontSize: 12, color: '#999', paddingTop: 8 }}>
               We'll and the "/cohortz.com"
             </Text>
@@ -95,7 +106,7 @@ const CommunityInfo = () => {
 
       <Link asChild href="/(auth)/(convener)/community-info">
         <Pressable
-      onPress={handleCohortCreate}
+          onPress={handleCohortCreate}
           style={{
             borderWidth: 1,
             borderColor: '#F8F1FF',

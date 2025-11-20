@@ -17,7 +17,10 @@ import {
   ImagePickerResponse,
 } from 'react-native-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
-import type { DocumentPickerResult, DocumentPickerAsset } from 'expo-document-picker';
+import type {
+  DocumentPickerResult,
+  DocumentPickerAsset,
+} from 'expo-document-picker';
 import Video from 'react-native-video';
 import { colors } from '@/utils/color';
 import { NavHead } from '@/components/HeadRoute';
@@ -33,58 +36,67 @@ interface MediaFile {
   size?: number;
 }
 
-const CreateLesson= () => {
+const CreateLesson = () => {
   const [title, setTitle] = useState<string>('Introduction');
   const [media, setMedia] = useState<MediaFile | null>(null);
   const [text, setText] = useState<string>('');
   const lessonID = useLocalSearchParams().lessonId as string;
   const moduleID = useLocalSearchParams().moduleId as string;
-  const moduleTitle = useLocalSearchParams().moduleTitle
-  const {data: lessonData, isLoading} = useGetLesson(lessonID, moduleID);
-  const [loading, setLoading] = useState(false)
+  const moduleTitle = useLocalSearchParams().moduleTitle;
+  const { data: lessonData, isLoading } = useGetLesson(lessonID, moduleID);
+  const [loading, setLoading] = useState(false);
 
   // ✅ Normalizes both picker results (ImagePicker + DocumentPicker)
   const handleMediaSelected = (file: Asset | DocumentPickerAsset) => {
-  let unified: MediaFile | null = null;
+    let unified: MediaFile | null = null;
 
-  // Handle files from react-native-image-picker
-  if ('fileName' in file) {
-    const fileType = file.type ?? 'application/octet-stream';
-    
-    // Better video detection for image picker
-    const isVideo = fileType.startsWith('video/') || 
-                   (file.type === undefined && file.uri?.includes('.mp4')) ||
-                   (file.type === undefined && file.uri?.includes('.mov'));
-    
-    unified = {
-      uri: file.uri ?? '',
-      type: isVideo ? 'video' : fileType.startsWith('image/') ? 'image' : 'document',
-      name: file.fileName ?? 'unknown',
-      size: file.fileSize ?? undefined,
-    };
-  }
-  // Handle files from expo-document-picker
-  else if ('name' in file && 'uri' in file) {
-    const fileType = (file.mimeType as string) ?? 'application/octet-stream';
-    
-    unified = {
-      uri: file.uri,
-      type: fileType.startsWith('video/') ? 'video' : 
-            fileType.startsWith('audio/') ? 'audio' : 
-            fileType.startsWith('image/') ? 'image' : 'document',
-      name: file.name,
-      size: file.size ?? undefined,
-    };
-  }
+    // Handle files from react-native-image-picker
+    if ('fileName' in file) {
+      const fileType = file.type ?? 'application/octet-stream';
 
-  if (!unified) {
-    console.warn('Unknown file type selected');
-    return;
-  }
+      // Better video detection for image picker
+      const isVideo =
+        fileType.startsWith('video/') ||
+        (file.type === undefined && file.uri?.includes('.mp4')) ||
+        (file.type === undefined && file.uri?.includes('.mov'));
 
-  console.log('Selected media:', unified); // Debug log
-  setMedia(unified);
-};
+      unified = {
+        uri: file.uri ?? '',
+        type: isVideo
+          ? 'video'
+          : fileType.startsWith('image/')
+            ? 'image'
+            : 'document',
+        name: file.fileName ?? 'unknown',
+        size: file.fileSize ?? undefined,
+      };
+    }
+    // Handle files from expo-document-picker
+    else if ('name' in file && 'uri' in file) {
+      const fileType = (file.mimeType as string) ?? 'application/octet-stream';
+
+      unified = {
+        uri: file.uri,
+        type: fileType.startsWith('video/')
+          ? 'video'
+          : fileType.startsWith('audio/')
+            ? 'audio'
+            : fileType.startsWith('image/')
+              ? 'image'
+              : 'document',
+        name: file.name,
+        size: file.size ?? undefined,
+      };
+    }
+
+    if (!unified) {
+      console.warn('Unknown file type selected');
+      return;
+    }
+
+    console.log('Selected media:', unified); // Debug log
+    setMedia(unified);
+  };
 
   // ✅ Opens file picker for images or videos
   const pickMediaFromLibrary = () => {
@@ -107,62 +119,64 @@ const CreateLesson= () => {
     });
   };
 
-const pickDocumentsOrAudio = async () => {
-  try {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: '*/*', // allows any file type
-      multiple: false,
-      copyToCacheDirectory: true,
-    });
+  const pickDocumentsOrAudio = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*', // allows any file type
+        multiple: false,
+        copyToCacheDirectory: true,
+      });
 
-    // Explicit type guard for "cancel" or "success"
-    if ('type' in result && result.type === 'cancel') {
-      console.log('User cancelled document picker');
-      return;
-    }
+      // Explicit type guard for "cancel" or "success"
+      if ('type' in result && result.type === 'cancel') {
+        console.log('User cancelled document picker');
+        return;
+      }
 
-    // Handle newer vs. older result structure
-    const file: DocumentPickerAsset | undefined =
-      Array.isArray((result as any).assets)
+      // Handle newer vs. older result structure
+      const file: DocumentPickerAsset | undefined = Array.isArray(
+        (result as any).assets,
+      )
         ? (result as any).assets[0]
         : (result as any);
 
-    if (file?.uri) {
-      handleMediaSelected(file);
+      if (file?.uri) {
+        handleMediaSelected(file);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick document');
     }
-  } catch (error) {
-    Alert.alert('Error', 'Failed to pick document');
-  }
-};
-
-
-
+  };
 
   // ✅ Unified upload handler
   const handleUploadPress = () => {
-    Alert.alert('Choose Media Type', 'Select the type of file you want to upload', [
-      { text: 'Photos & Videos', onPress: pickMediaFromLibrary },
-      { text: 'Documents & Audio', onPress: pickDocumentsOrAudio },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
+    Alert.alert(
+      'Choose Media Type',
+      'Select the type of file you want to upload',
+      [
+        { text: 'Photos & Videos', onPress: pickMediaFromLibrary },
+        { text: 'Documents & Audio', onPress: pickDocumentsOrAudio },
+        { text: 'Cancel', style: 'cancel' },
+      ],
+    );
   };
 
   const handleUpdateForm = async () => {
-  if (!media) {
-    Alert.alert("Error", "Please select a media file first");
-    return;
-  }
-  setLoading(true)
-  try {
-    const result = await uploadLessonMedia(moduleID, lessonID, media);
+    if (!media) {
+      Alert.alert('Error', 'Please select a media file first');
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await uploadLessonMedia(moduleID, lessonID, media);
 
-    setLoading(false)
-    Alert.alert("Success", "Lesson updated!");
-    console.log("Updated Lesson:", result);
-  } catch (error: any) {
-    console.log("Update Error:", error?.response?.data);
-    Alert.alert("Error", "Could not update lesson");
-  }
+      setLoading(false);
+      Alert.alert('Success', 'Lesson updated!');
+      console.log('Updated Lesson:', result);
+    } catch (error: any) {
+      console.log('Update Error:', error?.response?.data);
+      Alert.alert('Error', 'Could not update lesson');
+    }
   };
 
   // ✅ Dynamic file preview
@@ -171,7 +185,9 @@ const pickDocumentsOrAudio = async () => {
 
     switch (media.type) {
       case 'image':
-        return <Image source={{ uri: media.uri }} style={styles.mediaPreview} />;
+        return (
+          <Image source={{ uri: media.uri }} style={styles.mediaPreview} />
+        );
       case 'video':
         return (
           <View style={styles.videoContainer}>
@@ -212,16 +228,19 @@ const pickDocumentsOrAudio = async () => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
-        
+
         <View style={styles.header}>
-          
-                <View style={styles.header}>
-                  <Text style={{fontSize: 20, fontWeight: "700",}}>{isLoading ? "..." : lessonData.name}</Text>
-                  <Text style={{ fontSize: 14, color: "#555", marginTop: 4, }}
-                  >
-                    Course type: <Text style={{textDecorationLine: "underline", color: "#000",}}>Self-paced</Text>
-                  </Text>
-                </View>
+          <View style={styles.header}>
+            <Text style={{ fontSize: 20, fontWeight: '700' }}>
+              {isLoading ? '...' : lessonData.name}
+            </Text>
+            <Text style={{ fontSize: 14, color: '#555', marginTop: 4 }}>
+              Course type:{' '}
+              <Text style={{ textDecorationLine: 'underline', color: '#000' }}>
+                Self-paced
+              </Text>
+            </Text>
+          </View>
         </View>
 
         {/* Update Form Button */}
@@ -232,7 +251,10 @@ const pickDocumentsOrAudio = async () => {
         </TouchableOpacity> */}
 
         {/* Upload Section */}
-        <TouchableOpacity style={styles.uploadSection} onPress={handleUploadPress}>
+        <TouchableOpacity
+          style={styles.uploadSection}
+          onPress={handleUploadPress}
+        >
           <View style={styles.uploadContent}>
             {media ? (
               <>
@@ -243,28 +265,37 @@ const pickDocumentsOrAudio = async () => {
                 <Text style={styles.changeMediaText}>Tap to change media</Text>
               </>
             ) : (
-              <View style={{gap: 8, alignItems: 'center'}}>
+              <View style={{ gap: 8, alignItems: 'center' }}>
                 <Text style={styles.uploadIcon}>📁</Text>
                 {lessonData?.media ? (
-                  
-                <Text style={styles.uploadSubtext}>{lessonData?.media}</Text>
+                  <Text style={styles.uploadSubtext}>{lessonData?.media}</Text>
                 ) : (
-                  
-                <Text style={styles.uploadSubtext}>Videos, audio, images, documents</Text>
+                  <Text style={styles.uploadSubtext}>
+                    Videos, audio, images, documents
+                  </Text>
                 )}
               </View>
             )}
-                <Text style={styles.uploadText}>Upload media</Text>
+            <Text style={styles.uploadText}>Upload media</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-            onPress={handleUpdateForm}
-            style={{marginTop: 25, width: "100%", height: 45, backgroundColor: colors.primary, borderRadius: 50, justifyContent: 'center', alignItems: 'center'}}
+          onPress={handleUpdateForm}
+          style={{
+            marginTop: 25,
+            width: '100%',
+            height: 45,
+            backgroundColor: colors.primary,
+            borderRadius: 50,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
         >
-          <Text style={{color: colors.white}}>{loading ? "Saving...." : "Save"}</Text>
-
+          <Text style={{ color: colors.white }}>
+            {loading ? 'Saving....' : 'Save'}
+          </Text>
         </TouchableOpacity>
-{/* 
+        {/* 
         <View style={styles.textInputContainer}>
           <TextInput
             style={styles.textInput}
@@ -280,8 +311,6 @@ const pickDocumentsOrAudio = async () => {
     </SafeAreaView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -369,7 +398,7 @@ const styles = StyleSheet.create({
   uploadContent: {
     alignItems: 'center',
     width: '100%',
-  }, 
+  },
   uploadIcon: {
     fontSize: 14,
   },
@@ -383,7 +412,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 50,
     borderColor: colors.purpleShade,
-    marginTop: 10
+    marginTop: 10,
   },
   uploadSubtext: {
     fontSize: 12,

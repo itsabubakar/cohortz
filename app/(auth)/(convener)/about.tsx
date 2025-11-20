@@ -54,27 +54,27 @@ const About = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const token = useLocalSearchParams().token as string
+  const token = useLocalSearchParams().token as string;
   const apiURL = process.env.EXPO_PUBLIC_API_URL as string;
   const router = useRouter();
 
   useEffect(() => {
-    const changes = 
-      data.firstName !== '' || 
-      data.lastName !== ''
-    
+    const changes = data.firstName !== '' || data.lastName !== '';
+
     setHasChanges(changes);
   }, [data.firstName, data.lastName]);
 
   const handleUpdate = (field: keyof FormData, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData((prev) => ({ ...prev, [field]: value }));
   };
 
-
   const handleSave = async () => {
-    console.log("token: ", token)
+    console.log('token: ', token);
     if (!isChecked) {
-      Alert.alert('Terms Required', 'Please agree to the terms before continuing.');
+      Alert.alert(
+        'Terms Required',
+        'Please agree to the terms before continuing.',
+      );
       return;
     }
     setLoading(true);
@@ -85,44 +85,41 @@ const About = () => {
       formData.append('last_name', data.lastName);
       formData.append('password', data.password);
 
-
-      const response = await axios.put(
-        `${apiURL}/v1/api/profile`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.put(`${apiURL}/v1/api/profile`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.error) {
-        Alert.alert('Update Failed', JSON.stringify(response.data.message, null, 2));
+        Alert.alert(
+          'Update Failed',
+          JSON.stringify(response.data.message, null, 2),
+        );
       } else {
         Alert.alert('Success', 'Profile updated successfully!');
-          await AsyncStorage.setItem('authToken', token);
-          console.log('New token saved to AsyncStorage:', token);
+        await AsyncStorage.setItem('authToken', token);
+        console.log('New token saved to AsyncStorage:', token);
         router.navigate({
           pathname: '/(auth)/(convener)/community-info',
-          params: {token: token}
-        })
-        console.log()
-        
+          params: { token: token },
+        });
+        console.log();
+
         console.log('New token saved:', response.data);
       }
     } catch (error: any) {
       console.error('Update Error:', error.response || error);
       Alert.alert(
         'Error',
-        error?.response?.data?.message || 'Something went wrong while updating your profile.'
+        error?.response?.data?.message ||
+          'Something went wrong while updating your profile.',
       );
     } finally {
       setLoading(false);
     }
   };
-
-      
 
   return (
     <SafeAreaWrapper>
@@ -136,7 +133,7 @@ const About = () => {
             label="First Name"
             placeholder="First name"
             value={data.firstName}
-            onChangeText={(value:string) => handleUpdate('firstName', value)}
+            onChangeText={(value: string) => handleUpdate('firstName', value)}
           />
           <Input
             label="Last Name"
@@ -144,30 +141,29 @@ const About = () => {
             value={data.lastName}
             onChangeText={(value: string) => handleUpdate('lastName', value)}
           />
-                  <Input
-                    label="Password"
-                    value={data.password}
-                    onChangeText={(value: string) => handleUpdate('password', value)}
-                    placeholder="Create a password"
-                    secureTextEntry
-                  />
-                  <Input
-                    label="Re-type Password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    placeholder="Re-type your password"
-                    secureTextEntry
-                  />
+          <Input
+            label="Password"
+            value={data.password}
+            onChangeText={(value: string) => handleUpdate('password', value)}
+            placeholder="Create a password"
+            secureTextEntry
+          />
+          <Input
+            label="Re-type Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Re-type your password"
+            secureTextEntry
+          />
         </View>
 
         <View style={styles.checkboxContainer}>
           <CustomCheckbox
             checked={isChecked}
-            onToggle={() => setIsChecked(prev => !prev)}
+            onToggle={() => setIsChecked((prev) => !prev)}
           />
           <Text>
-            I agree to the{' '}
-            <Text style={styles.linkText}>terms</Text> and{' '}
+            I agree to the <Text style={styles.linkText}>terms</Text> and{' '}
             <Text style={styles.linkText}>privacy policy</Text>.
           </Text>
         </View>

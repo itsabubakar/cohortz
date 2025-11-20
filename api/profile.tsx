@@ -26,7 +26,7 @@ api.interceptors.request.use(async (config) => {
   if (tokenToUse) {
     config.headers.Authorization = `Bearer ${tokenToUse}`;
   }
-  console.log(tokenToUse === initialToken)
+  console.log(tokenToUse === initialToken);
 
   return config;
 });
@@ -46,7 +46,7 @@ export interface UpdateProfileResponse {
 // ✅ Modified function to accept tokenType
 export const updateProfile = async (
   data: ProfileProp,
-  tokenType: 'authToken' | 'initialToken' = 'authToken'
+  tokenType: 'authToken' | 'initialToken' = 'authToken',
 ): Promise<UpdateProfileResponse> => {
   const formData = new FormData();
 
@@ -56,7 +56,7 @@ export const updateProfile = async (
   if (data.password) formData.append('password', data.password);
   if (data.location) formData.append('location', data.location);
   if (data.socials) formData.append('socials', data.socials);
-  
+
   if (data.image) {
     formData.append('image', {
       uri: data.image.uri,

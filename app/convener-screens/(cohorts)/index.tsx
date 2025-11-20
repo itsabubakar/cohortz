@@ -17,15 +17,14 @@ import { CohortType } from '@/types/cohortType';
 
 const Cohorts = () => {
   const [cohortData, setCohortData] = useState({
-    name: "",
-    description: ""
-  })
+    name: '',
+    description: '',
+  });
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
   /// Note: Instead of calling the communities withing a cohort, its the cohort that is being called in this case. a major oversight
   const { data: cohorts = [], isLoading, isError } = useConvenersCohorts();
-  const { mutate: createCohort } = useCreateCohort()
-  
+  const { mutate: createCohort } = useCreateCohort();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedCohort, setSelectedCohort] = useState<any>(null);
@@ -35,39 +34,38 @@ const Cohorts = () => {
     // If index is greater than -1, sheet is active
   }, []);
 
-    const handleCreateCohort = () => {
-      if (!cohortData.name.trim() || !cohortData.description.trim()) {
-        alert("Please fill in the field")
-        return
-      }
-      const payload: CohortType = {
-          name: cohortData.name,
-          description: cohortData.description
-      }
-  
-      createCohort(payload, {
-          onSuccess: (data:any) => {
-            setCohortData({
-              name: "",
-              description: ""
-            })
-            alert("Success!")
-          },
-          onError: (error: any) => {
-            console.log("Not working")
-          }
-      })
+  const handleCreateCohort = () => {
+    if (!cohortData.name.trim() || !cohortData.description.trim()) {
+      alert('Please fill in the field');
+      return;
     }
-    const updateCohortData = (field: string, value: string) => {
-      setCohortData(prev => ({...prev, [field]: value}));
+    const payload: CohortType = {
+      name: cohortData.name,
+      description: cohortData.description,
     };
+
+    createCohort(payload, {
+      onSuccess: (data: any) => {
+        setCohortData({
+          name: '',
+          description: '',
+        });
+        alert('Success!');
+      },
+      onError: (error: any) => {
+        console.log('Not working');
+      },
+    });
+  };
+  const updateCohortData = (field: string, value: string) => {
+    setCohortData((prev) => ({ ...prev, [field]: value }));
+  };
   const openBottomSheet = (id: number) => {
     const cohort = cohorts.find((cohort: CohortProps) => cohort.id === id);
     setSelectedCohort(cohort);
     // You can set the selected cohort to state if needed
     console.log('Opening bottom sheet for cohort ID:', cohort);
     bottomSheetRef.current?.expand();
-
   };
 
   const toggleModal = () => {
@@ -79,7 +77,7 @@ const Cohorts = () => {
       pathname: `/convener-screens/(cohorts)/community/[id]`,
       params: { id },
     });
-  }
+  };
   const renderBackdrop = useCallback(
     (
       props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps,
@@ -136,8 +134,14 @@ const Cohorts = () => {
       {cohorts.length !== 0 && (
         <View style={{ gap: 15 }}>
           {cohorts.map((cohort: any) => (
-            
-          <Cohort key={cohort.id} name={cohort.name} onPress={() => {handleCohortPress(cohort.id)}} onOpenBottomSheet={() => openBottomSheet(cohort.id)} />
+            <Cohort
+              key={cohort.id}
+              name={cohort.name}
+              onPress={() => {
+                handleCohortPress(cohort.id);
+              }}
+              onOpenBottomSheet={() => openBottomSheet(cohort.id)}
+            />
           ))}
         </View>
       )}
@@ -164,18 +168,21 @@ const Cohorts = () => {
           >
             Create Cohort
           </Text>
-          <View style={{ gap: 16, marginTop: 26 }}><Input 
-  value={cohortData.name} 
-  onChangeText={(text: string) => updateCohortData('name', text)} 
-  label="Cohort Name" 
-  placeholder="Cohort title" 
-/>
-<Input 
-  value={cohortData.description} 
-  onChangeText={(text: string) => updateCohortData('description', text)} 
-  label="Description" 
-  placeholder="Cohort description" 
-/>
+          <View style={{ gap: 16, marginTop: 26 }}>
+            <Input
+              value={cohortData.name}
+              onChangeText={(text: string) => updateCohortData('name', text)}
+              label="Cohort Name"
+              placeholder="Cohort title"
+            />
+            <Input
+              value={cohortData.description}
+              onChangeText={(text: string) =>
+                updateCohortData('description', text)
+              }
+              label="Description"
+              placeholder="Cohort description"
+            />
             <Input label="Community Name" placeholder="Cohort title" />
           </View>
           <View style={{ alignItems: 'center' }}>
@@ -197,7 +204,7 @@ const Cohorts = () => {
           </View>
         </View>
       </Modal>
-      
+
       <BottomSheet
         ref={bottomSheetRef}
         index={0} // Start fully collapsed
@@ -215,7 +222,7 @@ const Cohorts = () => {
             }}
           >
             <TouchableOpacity
-              // onPress={() => router.push('/convener-screens/edit-cohort')}
+            // onPress={() => router.push('/convener-screens/edit-cohort')}
             >
               <Text>See learners</Text>
             </TouchableOpacity>
@@ -223,10 +230,12 @@ const Cohorts = () => {
               <Text>Add learners (copy link)</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.navigate({
-                pathname: `/convener-screens/(cohorts)/edit-profile/[id]`,
-                params: { id: selectedCohort?.id },
-              })}
+              onPress={() =>
+                router.navigate({
+                  pathname: `/convener-screens/(cohorts)/edit-profile/[id]`,
+                  params: { id: selectedCohort?.id },
+                })
+              }
             >
               <Text>Edit community {selectedCohort?.name} </Text>
             </TouchableOpacity>
@@ -245,23 +254,27 @@ interface CohortProps {
   onOpenBottomSheet: () => void;
   onPress: () => void;
 }
-const Cohort = ({
-  name,
-  onOpenBottomSheet,
-  onPress
-}: CohortProps ) => {
+const Cohort = ({ name, onOpenBottomSheet, onPress }: CohortProps) => {
   const router = useRouter();
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={{ gap: 16, alignItems: "flex-start", flexDirection: "row", justifyContent: "space-between" }}
+      style={{
+        gap: 16,
+        alignItems: 'flex-start',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      }}
     >
       <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-        
         <View style={styles.profileImage} />
         <View style={{}}>
           <Text
-            style={{ fontFamily: 'DMSansMedium', fontSize: 11, color: '#1F1F1F' }}
+            style={{
+              fontFamily: 'DMSansMedium',
+              fontSize: 11,
+              color: '#1F1F1F',
+            }}
           >
             {name}
           </Text>

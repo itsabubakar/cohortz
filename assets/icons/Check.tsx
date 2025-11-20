@@ -7,6 +7,6 @@ export const Check = (props: any) => {
 </svg>
 
     `;
-  const prop = { ...props, xml, };
+  const prop = { ...props, xml };
   return <SvgXml {...prop} />;
 };

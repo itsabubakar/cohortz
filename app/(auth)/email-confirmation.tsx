@@ -13,14 +13,14 @@ const apiURL = process.env.EXPO_PUBLIC_API_URL;
 type EmailResponse = {
   error: boolean;
   message?: string;
-  link: string
-}
+  link: string;
+};
 const EmailConfirmation = (props: Props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,11 +29,11 @@ const EmailConfirmation = (props: Props) => {
 
   const handleSubmit = async () => {
     if (!email) {
-      setError("Email is required.");
+      setError('Email is required.');
       return;
     }
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
+      setError('Please enter a valid email address.');
       return;
     }
     if (!password || !confirmPassword) {
@@ -45,44 +45,43 @@ const EmailConfirmation = (props: Props) => {
       return;
     }
     setLoading(true);
-    setError("");
+    setError('');
 
     try {
-      const response = await axios.post(`${apiURL}/v1/api/auth/register-email`, 
-        { email, password }
+      const response = await axios.post(
+        `${apiURL}/v1/api/auth/register-email`,
+        { email, password },
       );
       if (!response.data.error) {
         router.navigate({
           pathname: '/(auth)/signUp',
-          params: { token: response.data.token}
+          params: { token: response.data.token },
         });
-        console.log("sent!")
+        console.log('sent!');
       } else {
-        setError("Failed to send confirmation email. Please try again.");
+        setError('Failed to send confirmation email. Please try again.');
       }
-    }
-     catch (err) {
-        setError("An unexpected error occurred");
-        console.log("9")
-      
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.log('9');
     } finally {
       setLoading(false);
     }
-    
-  }
-  
+  };
+
   return (
     <SafeAreaWrapper>
       <View style={styles.container}>
-        <Text variant={'l'} style={styles.header}>Sign up for Cohortle</Text>
-        
+        <Text variant={'l'} style={styles.header}>
+          Sign up for Cohortle
+        </Text>
+
         <Text>Fill in the field to create an account</Text>
         {/* <Text>We'll send you a quick email to confirm your address.</Text> */}
-        
-        
-        <View style={{gap: 2, marginTop: 8}}>
+
+        <View style={{ gap: 2, marginTop: 8 }}>
           <Text>Email</Text>
-          <TextInput 
+          <TextInput
             style={styles.input}
             autoCapitalize="none"
             value={email}
@@ -90,9 +89,9 @@ const EmailConfirmation = (props: Props) => {
             onChangeText={setEmail}
           />
         </View>
-        <View style={{gap: 2, marginTop: 8}}>
+        <View style={{ gap: 2, marginTop: 8 }}>
           <Text>Password</Text>
-          <TextInput 
+          <TextInput
             style={styles.input}
             value={password}
             editable={!loading}
@@ -101,9 +100,9 @@ const EmailConfirmation = (props: Props) => {
             placeholder="Confirm Password"
           />
         </View>
-        <View style={{gap: 2, marginTop: 8}}>
+        <View style={{ gap: 2, marginTop: 8 }}>
           <Text>Confirm Password</Text>
-          <TextInput 
+          <TextInput
             style={styles.input}
             value={confirmPassword}
             editable={!loading}
@@ -113,12 +112,9 @@ const EmailConfirmation = (props: Props) => {
           />
         </View>
         <View style={{ marginTop: 36 }}>
-          <Button
-            text="Next"
-            onPress={handleSubmit}
-          />
+          <Button text="Next" onPress={handleSubmit} />
         </View>
-        {error && <Text style={{color: "red", marginTop: 10}}>{error}</Text>}
+        {error && <Text style={{ color: 'red', marginTop: 10 }}>{error}</Text>}
       </View>
     </SafeAreaWrapper>
   );
@@ -134,10 +130,10 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 5,
     paddingHorizontal: 4,
-    borderColor: "black",
-    borderWidth: 1
+    borderColor: 'black',
+    borderWidth: 1,
   },
   header: {
-    fontWeight: "bold"
+    fontWeight: 'bold',
   },
 });
