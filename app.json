@@ -31,7 +31,8 @@
       "router": { "origin": false },
       "eas": { "projectId": "c439ba9d-8f47-4800-8426-d7000c7b6130" }
     },
-    "runtimeVersion": "1.0.0",
+
+    "runtimeVersion": "1.0.1",
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
