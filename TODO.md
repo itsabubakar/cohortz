@@ -1,0 +1,5 @@
+- Fix type inconsistency: Change `String` to `string` for title state.
+- Initialize module state properly: Set to null initially instead of moduleData[1].
+- Add useEffect to set module when moduleData loads: Default to moduleData[1]?.id if available, else first module.
+- Update useGetLessons to enable only when module is valid.
+- Ensure communityId handling: useGetModules already has enabled: !!id.

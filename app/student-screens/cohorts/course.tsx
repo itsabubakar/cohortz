@@ -5,22 +5,62 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaWrapper } from '@/HOC';
 import { Back, Check, Close, Options, RedDoor } from '@/assets/icons';
 import { router, useRouter } from 'expo-router';
 import { BottomSheet } from '@/components/ui';
 import { CheckBox } from '@rneui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useGetModules from '@/api/communities/modules/getModules';
+import { useGetLessons } from '@/api/communities/lessons/getLessons';
+
+type ModuleType = {
+  id: number;
+  title: string;
+  status: string;
+  order_number: number;
+  community_id: number;
+  created_at: string;
+  updated_at: string;
+};
 
 const Course = () => {
   const [activeTab, setActiveTab] = useState('Home');
   const numbers = Array.from({ length: 20 }, (_, i) => i + 1);
-  const [module, setModule] = useState(1);
   const [isSheetVisible, setSheetVisible] = useState(false);
-  const getCommunityID = async () => {
-    console.log(await AsyncStorage.getItem("communityID"))
-  }
+  const [communityId, setCommunityId] = useState<string | null>(null);
+  const [title, setTitle] = useState<string | null>(null)
+  const {data: moduleData} = useGetModules(Number(communityId))
+  const [module, setModule] = useState<number | null>(null);
+  const {data: lessonData} = useGetLessons(module)
+
+
+  console.log(lessonData)
+  console.log(title)
+  useEffect(() => {
+    const loadId = async () => {
+      const id = await AsyncStorage.getItem("communityID");
+      setCommunityId(id);
+    };
+
+    loadId();
+  }, []);
+
+  useEffect(() => {
+    const name = async () => {
+      const title = await AsyncStorage.getItem("communityName");
+      setTitle(title);
+    };
+
+    name();
+  }, []);
+
+  useEffect(() => {
+    if (moduleData && moduleData.length > 0) {
+      setModule(moduleData[1]?.id || moduleData[0].id);
+    }
+  }, [moduleData]);
 
   return (
     <SafeAreaWrapper>
@@ -37,7 +77,7 @@ const Course = () => {
           <Back />
         </TouchableOpacity>
         <Text style={{ fontSize: 10, fontWeight: 'semibold' }}>
-          Create High-Fidelity Designs and Prototypes in Figma
+          {title}
         </Text>
         <TouchableOpacity onPress={() => setSheetVisible(true)}>
           <Options />
@@ -53,7 +93,7 @@ const Course = () => {
         >
           Name of Cohort
         </Text>
-        <Text onPress={getCommunityID}>Name of Convener</Text>
+        <Text onPress={() => {}}>Name of Convener</Text>
       </View>
       <View style={{ flex: 1 }}>
         {/* Tab Bar */}
@@ -103,12 +143,12 @@ const Course = () => {
               <View>
                 <Text>Modules</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {numbers.map((num) => (
+                  {moduleData?.map((mod: ModuleType) => (
                     <TouchableOpacity
-                      onPress={() => setModule(num)}
-                      key={num}
+                      onPress={() => setModule(mod.id)}
+                      key={mod.id}
                       style={[
-                        num === module && { backgroundColor: 'purple' },
+                        mod.id === module && { backgroundColor: 'purple' },
                         {
                           flexDirection: 'row',
                           gap: 4,
@@ -127,21 +167,24 @@ const Course = () => {
                     >
                       <Text
                         style={[
-                          module === num && { color: '#DABCFF' },
+                          mod.id === module && { color: '#DABCFF' },
                           { fontSize: 10 },
                         ]}
                       >
-                        {num}
+                        {mod.title}
                       </Text>
                       <Check color="#DABCFF" />
                     </TouchableOpacity>
                   ))}
+
                 </ScrollView>
                 <View style={{ marginTop: 16 }}>
+                  {/* <Module />
                   <Module />
-                  <Module />
-                  <Module />
-                  <Module />
+                  <Module /> */}
+                  {lessonData?.map((lesson: LessonProp) => (
+                    <Lesson key={lesson.id} {...lesson} />
+                  ))}
                 </View>
               </View>
             </View>
@@ -202,14 +245,31 @@ const Course = () => {
   );
 };
 
-const Module = () => {
+interface LessonProp {
+  id: number;
+  description: string;
+  module_id: string;
+  name: string;
+  media: string;
+  order_number: string;
+  status: string;
+  
+}
+const Lesson = (lesson: LessonProp) => {
   const router = useRouter();
   const [checkedModule, setCheckedModule] = useState(false);
-  const [lessonStatus, setLessonStatus] = useState(false);
+
+  const handlePress = async () => {
+    await AsyncStorage.setItem("media", lesson.media)
+    await AsyncStorage.setItem("name", lesson.name)
+    router.navigate('/student-screens/cohorts/module')
+  }
+
   return (
     <TouchableOpacity
-      onPress={() => router.push('/student-screens/cohorts/module')}
+      onPress={handlePress}
       style={{
+        width: '100%',
         marginBottom: 16,
         padding: 16,
         borderWidth: 1,
@@ -217,10 +277,12 @@ const Module = () => {
         borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
       }}
     >
-      <View>
-        <Text style={{ fontWeight: 'semibold' }}>Module enteries</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontWeight: '600' }}>{lesson.name}</Text>
+
         <View
           style={{
             flexDirection: 'row',
@@ -261,6 +323,7 @@ const Module = () => {
     </TouchableOpacity>
   );
 };
+
 export default Course;
 
 const styles = StyleSheet.create({});

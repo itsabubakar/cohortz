@@ -72,6 +72,8 @@ const Course = (community: CommunityData) => {
   const router = useRouter();
   const handlePress = async () => {
     await AsyncStorage.setItem("communityID", String(community.id))
+    await AsyncStorage.setItem("communityaName", String(community.name))
+    // await AsyncStorage.setItem("communityID", String(community.id))
     router.navigate('/student-screens/cohorts/course')
     // await AsyncStorage.setItem()
   }

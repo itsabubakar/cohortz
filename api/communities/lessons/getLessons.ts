@@ -20,14 +20,14 @@ const getLessons = async (id: number) => {
   }
 };
 
-export const useGetLessons = (id: number) => {
+export const useGetLessons = (id: number | null) => {
   return useQuery({
     queryKey: ['lessons', id],
-    queryFn: () => getLessons(id),
+    queryFn: () => getLessons(id!),
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
     refetchInterval: 5000,
     // staleTime: 0,
-    // enabled: !!id,
+    enabled: !!id,
   });
 };
