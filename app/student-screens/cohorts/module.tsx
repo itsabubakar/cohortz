@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
-import { Video, Audio } from 'expo-av';
+// import { Video, Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -29,24 +29,6 @@ const Module = () => {
     loadData();
   }, []);
 
-  // Initialize audio mode for video playback
-  useEffect(() => {
-    const setupAudio = async () => {
-      try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          playsInSilentModeIOS: true,
-          staysActiveInBackground: false,
-          shouldDuckAndroid: true,
-        });
-      } catch (error) {
-        console.error('Error setting up audio:', error);
-      }
-    };
-
-    setupAudio();
-  }, []);
-
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -61,20 +43,6 @@ const Module = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.videoSection}>
-        {media ? (
-          <Video
-            source={{ uri: media }}
-            style={styles.video}
-            useNativeControls
-            // resizeMode="contain"
-            shouldPlay={false}
-            isLooping={false}
-          />
-        ) : (
-          <View style={styles.noVideoContainer}>
-            <Text>No video available</Text>
-          </View>
-        )}
       </View>
 
       <View style={styles.contentSection}>
